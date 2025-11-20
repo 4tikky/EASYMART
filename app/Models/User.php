@@ -31,7 +31,7 @@ class User extends Authenticatable
         'rw',
         'nama_kelurahan',
         'kabupaten_kota',
-        'propinsi',
+        'provinsi',
         'no_ktp_pic',
         'foto_pic',
         'file_upload_ktp_pic',
@@ -58,5 +58,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function seller()
+    {
+        return $this->hasOne(Seller::class);
     }
 }

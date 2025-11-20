@@ -31,16 +31,15 @@ class AuthenticatedSessionController extends Controller
 
         // JIKA ROLE = PENJUAL → WAJIB CEK STATUS VERIFIKASI
         if ($user->role === 'penjual') {
-            if ($user->status_verifikasi !== 'disetujui') {
-                // kalau masih pending / ditolak → langsung logout lagi
+            $seller = $user->seller; // pakai relasi
+
+            if (! $seller || $seller->status !== 'ACTIVE') {
                 Auth::logout();
 
                 return back()->withErrors([
                     'email' => 'Akun penjual Anda belum disetujui admin.',
                 ])->onlyInput('email');
             }
-
-            // kalau sudah disetujui → boleh masuk dashboard penjual
             return redirect()->route('seller.dashboard');
         }
 
