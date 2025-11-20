@@ -41,7 +41,7 @@ return new class extends Migration
             $table->string('rw')->nullable(); // 8. RW
             $table->string('nama_kelurahan')->nullable(); // 9. Nama kelurahan
             $table->string('kabupaten_kota')->nullable(); // 10. Kabupaten/Kota
-            $table->string('propinsi')->nullable(); // 11. Propinsi
+            $table->string('provinsi')->nullable(); // 11. provinsi
             $table->string('no_ktp_pic')->nullable(); // 12. No. KTP PIC
             $table->string('foto_pic')->nullable(); // 13. Foto PIC (disimpan sbg path file)
             $table->string('file_upload_ktp_pic')->nullable(); // 14. File upload KTP PIC (disimpan sbg path file)

@@ -25,9 +25,31 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
-
         $request->session()->regenerate();
 
+        $user = $request->user();
+
+        // JIKA ROLE = PENJUAL → WAJIB CEK STATUS VERIFIKASI
+        if ($user->role === 'penjual') {
+            if ($user->status_verifikasi !== 'disetujui') {
+                // kalau masih pending / ditolak → langsung logout lagi
+                Auth::logout();
+
+                return back()->withErrors([
+                    'email' => 'Akun penjual Anda belum disetujui admin.',
+                ])->onlyInput('email');
+            }
+
+            // kalau sudah disetujui → boleh masuk dashboard penjual
+            return redirect()->route('seller.dashboard');
+        }
+
+        // JIKA ROLE = ADMIN / PLATFORM
+        if ($user->role === 'platform' || $user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+
+        // fallback (kalau nanti ada role lain)
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
