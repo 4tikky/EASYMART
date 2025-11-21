@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use App\Models\User;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -33,19 +34,19 @@ class AuthenticatedSessionController extends Controller
         if ($user->role === 'penjual') {
             $seller = $user->seller; // pakai relasi
 
-            if (! $seller || $seller->status !== 'ACTIVE') {
+            if ($user->status_verifikasi !== User::STATUS_ACTIVE) {
                 Auth::logout();
 
                 return back()->withErrors([
                     'email' => 'Akun penjual Anda belum disetujui admin.',
                 ])->onlyInput('email');
             }
-            return redirect()->route('seller.dashboard');
+            return redirect()->route('dashboard');
         }
 
         // JIKA ROLE = ADMIN / PLATFORM
         if ($user->role === 'platform' || $user->role === 'admin') {
-            return redirect()->route('admin.dashboard');
+            return redirect()->route('platform.dashboard');
         }
 
         // fallback (kalau nanti ada role lain)

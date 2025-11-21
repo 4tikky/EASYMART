@@ -12,6 +12,14 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
+    const ROLE_PLATFORM = 'platform';
+    const ROLE_PENJUAL = 'penjual';
+
+    const STATUS_PENDING = 'pending';
+    const STATUS_APPROVED = 'approved';
+    const STATUS_REJECTED = 'rejected';
+    const STATUS_ACTIVE = 'active';
+
     /**
      * The attributes that are mass assignable.
      *
