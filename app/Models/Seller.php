@@ -6,17 +6,22 @@ use Illuminate\Database\Eloquent\Model;
 
 class Seller extends Model
 {
-    // Di dalam class Seller extends Model...
-
-    protected $guarded = ['id']; // Biar semua kolom bisa diisi
-
-    public function products()
-    {
-        return $this->hasMany(Product::class);
-    }
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+    protected $fillable = [
+        'user_id',
+        'storeName',
+        'storeDescription',
+        'picName',
+        'picPhone',
+        'picEmail',
+        'picStreet',
+        'picRT',
+        'picRW',
+        'picVillage',
+        'picCity',
+        'picProvince',
+        'picKtpNumber',
+        'picPhotoPath',
+        'picKtpFilePath',
+        'status',
+    ];
 }
