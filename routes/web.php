@@ -79,7 +79,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/seller/dashboard', [SellerController::class, 'dashboard'])->name('seller.dashboard');
 
     // 2. TAMBAHKAN INI: Form Upload Produk
-    Route::get('/seller/product/create', [SellerController::class, 'createProduct'])->name('seller.product.create');
+    //Route::get('/seller/product/create', [SellerController::class, 'createProduct'])->name('seller.product.create');
     
     // 3. TAMBAHKAN INI: Proses Simpan Produk
     Route::post('/seller/product', [SellerController::class, 'storeProduct'])->name('seller.product.store');
