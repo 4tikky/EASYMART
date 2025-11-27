@@ -8,6 +8,7 @@ use App\Http\Controllers\Platform\SellerApprovalController;
 use App\Mail\SellerApprovedMail;
 use App\Mail\SellerRejectedMail;
 use Illuminate\Support\Facades\Mail;
+use App\Http\Controllers\SellerController;
 
 Route::get('/test-email', function () {
     $user = User::where('role', 'penjual')->first();
@@ -65,5 +66,25 @@ Route::middleware('auth')->group(function () {
 // Logout route
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->name('logout');
+
+Route::middleware(['auth'])->group(function () {
+    
+    // 1. Pintu Masuk Utama (Klik "Toko Saya")
+    Route::get('/toko-saya', [SellerController::class, 'checkStore'])->name('seller.check');
+
+    // 2. Halaman Registrasi Toko
+    Route::get('/seller/register', [SellerController::class, 'create'])->name('seller.register');
+    Route::post('/seller/register', [SellerController::class, 'store'])->name('seller.store');
+
+    Route::get('/seller/dashboard', [SellerController::class, 'dashboard'])->name('seller.dashboard');
+
+    // 2. TAMBAHKAN INI: Form Upload Produk
+    Route::get('/seller/product/create', [SellerController::class, 'createProduct'])->name('seller.product.create');
+    
+    // 3. TAMBAHKAN INI: Proses Simpan Produk
+    Route::post('/seller/product', [SellerController::class, 'storeProduct'])->name('seller.product.store');
+
+});
+
 
 require __DIR__.'/auth.php';
