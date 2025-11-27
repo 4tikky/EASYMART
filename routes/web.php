@@ -8,7 +8,10 @@ use App\Http\Controllers\Platform\SellerApprovalController;
 use App\Mail\SellerApprovedMail;
 use App\Mail\SellerRejectedMail;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\SellerController;
+use App\Http\Controllers\SellerProductController;
+
 use App\Models\Product;
 
 Route::get('/test-email', function () {
@@ -18,6 +21,42 @@ Route::get('/test-email', function () {
 
     return 'Email test terkirim (kalau tidak ada error di layar).';
 });
+
+// Route::middleware(['auth', 'penjual'])
+//     ->prefix('seller')
+//     ->name('seller.')
+//     ->group(function () {
+
+
+//         Route::get('/dashboard', [SellerController::class, 'index'])
+//             ->name('dashboard');
+//         Route::get('/products', [SellerProductController::class, 'index'])
+//             ->name('products.index');
+
+//         Route::get('/products/create', [SellerProductController::class, 'create'])
+//             ->name('products.create');
+
+//         Route::post('/products', [SellerProductController::class, 'store'])
+//             ->name('products.store');
+
+//         // tombol "Buka Toko" / "Toko Saya"
+//         Route::get('/toko-saya', [SellerController::class, 'checkStore'])
+//             ->name('seller.check');
+
+//         // form registrasi seller
+//         Route::get('/seller/register', [SellerController::class, 'create'])
+//             ->name('seller.register');
+//         Route::post('/seller/register', [SellerController::class, 'store'])
+//             ->name('seller.store');
+
+//         // dashboard seller
+//         Route::get('/seller/dashboard', [SellerController::class, 'dashboard'])
+//             ->name('seller.dashboard');
+
+//         // simpan produk baru
+//         Route::post('/seller/products', [SellerController::class, 'storeProduct'])
+//             ->name('seller.products.store');
+//         });
 
 Route::middleware(['auth', 'platform'])
     ->prefix('platform')
@@ -57,8 +96,16 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
+    $user = Auth::user();
+
+    // Kalau user adalah penjual → lempar ke dashboard toko
+    if ($user && $user->role === 'penjual') {
+        return redirect()->route('seller.dashboard');
+    }
+    // kalau bukan penjual, pakai dashboard default saja
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -72,21 +119,19 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
 
 Route::middleware(['auth'])->group(function () {
     
-    // 1. Pintu Masuk Utama (Klik "Toko Saya")
     Route::get('/toko-saya', [SellerController::class, 'checkStore'])->name('seller.check');
-
-    // 2. Halaman Registrasi Toko
     Route::get('/seller/register', [SellerController::class, 'create'])->name('seller.register');
     Route::post('/seller/register', [SellerController::class, 'store'])->name('seller.store');
 
     Route::get('/seller/dashboard', [SellerController::class, 'dashboard'])->name('seller.dashboard');
 
-    // 2. TAMBAHKAN INI: Form Upload Produk
-    //Route::get('/seller/product/create', [SellerController::class, 'createProduct'])->name('seller.product.create');
-    
-    // 3. TAMBAHKAN INI: Proses Simpan Produk
     Route::post('/seller/product', [SellerController::class, 'storeProduct'])->name('seller.product.store');
-
+    Route::get('/seller/product/{product}/edit', [SellerController::class, 'editProduct'])
+        ->name('seller.product.edit');
+    Route::put('/seller/product/{product}', [SellerController::class, 'updateProduct'])
+        ->name('seller.product.update');
+    Route::delete('/seller/product/{product}', [SellerController::class, 'destroy'])
+        ->name('seller.product.destroy');
 });
 
 

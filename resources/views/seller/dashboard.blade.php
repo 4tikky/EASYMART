@@ -1,6 +1,25 @@
 <x-app-layout>
     <div x-data="{ showModal: false }">
+    @if(session('success'))
+    <div 
+        x-data="{ show: true }" 
+        x-show="show"
+        x-transition
+        @click="show = false"
+        class="fixed top-5 right-5 bg-green-600 text-white px-5 py-3 rounded-lg shadow-lg cursor-pointer z-50"
+    >
+        {{ session('success') }}
+    </div>
 
+    <script>
+        setTimeout(() => {
+            const alert = document.querySelector('[x-data="{ show: true }"]');
+            if(alert){
+                alert.__x.$data.show = false;
+            }
+        }, 3000); // otomatis hilang 3 detik
+    </script>
+    @endif
         <div class="bg-green-700 pb-24 pt-12">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center">
@@ -21,6 +40,12 @@
                 </div>
             </div>
         </div>
+
+        @if (session('success'))
+            <div class="mb-4 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg">
+                {{ session('success') }}
+            </div>
+        @endif
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16">
             
@@ -93,7 +118,27 @@
                                 <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm font-medium text-gray-900">{{ $product->name }}</td>
                                 <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">Rp {{ number_format($product->price) }}</td>
                                 <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ $product->stock }}</td>
-                                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm text-blue-600 cursor-pointer hover:underline">Edit</td>
+                                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                    <div class="flex items-center gap-4">
+                                        {{-- Tombol Edit --}}
+                                        <a href="{{ route('seller.product.edit', $product) }}" 
+                                        class="text-blue-600 hover:underline">
+                                            Edit
+                                        </a>
+
+                                        {{-- Tombol Hapus --}}
+                                        <form action="{{ route('seller.product.destroy', $product) }}" 
+                                            method="POST"
+                                            onsubmit="return confirm('Yakin ingin menghapus produk ini?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red-600 hover:underline">
+                                                Hapus
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+
                             </tr>
                             @endforeach
                         </tbody>
@@ -134,11 +179,17 @@
                             <div class="grid grid-cols-2 gap-4 mb-4">
                                 <div>
                                     <label class="block text-gray-700 text-sm font-bold mb-2">Harga (Rp)</label>
-                                    <input type="number" name="price" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                                    <input type="number" name="price"
+                                        min="0"
+                                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                        required>
                                 </div>
                                 <div>
                                     <label class="block text-gray-700 text-sm font-bold mb-2">Stok</label>
-                                    <input type="number" name="stock" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                                    <input type="number" name="stock"
+                                        min="0"
+                                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" 
+                                        required>
                                 </div>
                             </div>
 
