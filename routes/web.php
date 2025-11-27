@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\SellerController;
 use App\Http\Controllers\SellerProductController;
 
+use App\Models\Product;
 
 Route::get('/test-email', function () {
     $user = User::where('role', 'penjual')->first();
@@ -89,7 +90,9 @@ Route::get('/register/waiting', function () {
 })->name('seller.register.waiting');
 
 Route::get('/', function () {
-    return view('welcome');
+    $products = Product::with('seller')->latest()->get(); 
+    
+    return view('welcome', compact('products'));
 });
 
 Route::get('/dashboard', function () {
