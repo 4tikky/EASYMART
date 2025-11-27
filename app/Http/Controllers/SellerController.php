@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Seller;
+use App\Models\Product; 
 
 class SellerController extends Controller
 {
@@ -76,5 +77,39 @@ class SellerController extends Controller
         // 4. Kirim data ke View
         // Perhatikan kita kirim variabel '$seller', bukan '$store' biar konsisten
         return view('seller.dashboard', compact('seller', 'products', 'productNames', 'productStocks', 'productRatings'));
+    }
+    // --- FUNGSI BARU: MENYIMPAN PRODUK DARI POP-UP ---
+    public function storeProduct(Request $request)
+    {
+        // 1. Validasi Input (Biar datanya aman)
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric',
+            'stock' => 'required|numeric',
+            'category' => 'required',
+            'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Maksimal 2MB
+        ]);
+
+        // 2. Proses Upload Gambar (Kalau user upload foto)
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            // Foto akan disimpan di folder: storage/app/public/products
+            $imagePath = $request->file('image')->store('products', 'public');
+        }
+
+        // 3. Masukkan ke Database
+        Product::create([
+            'seller_id' => Auth::user()->seller->id, // Otomatis ambil ID toko milik user login
+            'name' => $request->name,
+            'price' => $request->price,
+            'stock' => $request->stock,
+            'category' => $request->category,
+            'description' => $request->description,
+            'image' => $imagePath,
+        ]);
+
+        // 4. Kembali ke Dashboard dengan pesan sukses
+        return redirect()->route('seller.dashboard')->with('success', 'Yeay! Produk berhasil ditambahkan! 🌸');
     }
 }
