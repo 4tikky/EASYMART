@@ -9,6 +9,7 @@ use App\Mail\SellerApprovedMail;
 use App\Mail\SellerRejectedMail;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\SellerController;
+use App\Models\Product;
 
 Route::get('/test-email', function () {
     $user = User::where('role', 'penjual')->first();
@@ -50,7 +51,9 @@ Route::get('/register/waiting', function () {
 })->name('seller.register.waiting');
 
 Route::get('/', function () {
-    return view('welcome');
+    $products = Product::with('seller')->latest()->get(); 
+    
+    return view('welcome', compact('products'));
 });
 
 Route::get('/dashboard', function () {
