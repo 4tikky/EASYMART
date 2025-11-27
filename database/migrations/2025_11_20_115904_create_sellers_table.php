@@ -1,38 +1,38 @@
 <?php
 
-namespace App\Models;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-
-class Seller extends Model
-{
-    use HasFactory;
-
-    protected $table = 'sellers';
-
-    protected $fillable = [
-        'user_id',
-        'storeName',
-        'storeDescription',
-        'picName',
-        'picPhone',
-        'picEmail',
-        'picStreet',
-        'picRT',
-        'picRW',
-        'picVillage',
-        'picCity',
-        'picProvince',
-        'picKtpNumber',
-        'picPhotoPath',
-        'picKtpFilePath',
-        'status',
-    ];
-
-    // relasi ke User (login)
-    public function user()
+return new class extends Migration {
+    public function up()
     {
-        return $this->belongsTo(User::class);
+        Schema::create('sellers', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('user_id');
+            $table->string('storeName');
+            $table->text('storeDescription')->nullable();
+            $table->string('picName');
+            $table->string('picPhone');
+            $table->string('picEmail');
+            $table->string('picStreet');
+            $table->string('picRT')->nullable();
+            $table->string('picRW')->nullable();
+            $table->string('picVillage')->nullable();
+            $table->string('picCity');
+            $table->string('picProvince');
+            $table->string('picKtpNumber');
+            $table->string('picPhotoPath')->nullable();
+            $table->string('picKtpFilePath')->nullable();
+            $table->string('status')->default('pending');
+            $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+        });
     }
-}
+
+    public function down()
+    {
+        Schema::dropIfExists('sellers');
+    }
+};

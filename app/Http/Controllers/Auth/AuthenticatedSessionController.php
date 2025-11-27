@@ -30,29 +30,30 @@ class AuthenticatedSessionController extends Controller
 
         $user = $request->user();
 
-        // JIKA ROLE = PENJUAL → WAJIB CEK STATUS VERIFIKASI
+        // 1. CEK STATUS PENJUAL (Tetap kita cek verifikasinya)
         if ($user->role === 'penjual') {
-            $seller = $user->seller; // pakai relasi
-
-            if ($user->status_verifikasi !== User::STATUS_ACTIVE) {
+            // Pastikan relasi seller ada sebelum dicek
+            if ($user->seller && $user->status_verifikasi !== User::STATUS_ACTIVE) {
                 Auth::logout();
 
                 return back()->withErrors([
                     'email' => 'Akun penjual Anda belum disetujui admin.',
                 ])->onlyInput('email');
             }
-            return redirect()->route('dashboard');
+            
+            // PERUBAHAN DI SINI:
+            // Jangan return redirect()->route('dashboard');
+            // Biarkan kodingan lanjut ke bawah (ke redirect '/')
         }
 
-        // JIKA ROLE = ADMIN / PLATFORM
+        // 2. KHUSUS ADMIN/PLATFORM (Biasanya Admin tetap mau langsung Dashboard)
         if ($user->role === 'platform' || $user->role === 'admin') {
             return redirect()->route('platform.dashboard');
         }
 
-        // fallback (kalau nanti ada role lain)
-        return redirect()->intended(route('dashboard', absolute: false));
+        // 3. SEMUA USER (TERMASUK PENJUAL) AKAN MASUK KE SINI (HOME)
+        return redirect()->intended('/'); 
     }
-
     /**
      * Destroy an authenticated session.
      */
