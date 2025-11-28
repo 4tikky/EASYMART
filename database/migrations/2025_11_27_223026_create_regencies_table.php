@@ -10,10 +10,14 @@ return new class extends Migration
     {
         Schema::create('regencies', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('province_id')
-                  ->constrained('provinces')
-                  ->cascadeOnDelete();
-            $table->string('name'); // nama kabupaten/kota
+            $table->unsignedBigInteger('province_id');
+            $table->string('name');
+
+            $table->foreign('province_id')
+                ->references('id')
+                ->on(config('laravolt.indonesia.table_prefix') . 'provinces')
+                ->onDelete('cascade');
+
             $table->timestamps();
         });
     }
