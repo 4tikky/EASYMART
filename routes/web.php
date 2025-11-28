@@ -10,6 +10,7 @@ use App\Mail\SellerRejectedMail;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\SellerController;
 use App\Models\Product;
+use App\Http\Controllers\LocationController;
 
 Route::get('/test-email', function () {
     $user = User::where('role', 'penjual')->first();
@@ -59,6 +60,16 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+// ====== ROUTE AJAX WILAYAH (INI YANG PENTING) ======
+Route::get('/locations/regencies/{province}', [LocationController::class, 'getRegencies'])
+    ->name('locations.regencies');
+
+Route::get('/locations/districts/{city}', [LocationController::class, 'getDistricts'])
+    ->name('locations.districts');
+
+Route::get('/locations/villages/{district}', [LocationController::class, 'getVillages'])
+    ->name('locations.villages');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

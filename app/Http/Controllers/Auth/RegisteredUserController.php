@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Province; // <-- penting
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,15 +17,21 @@ class RegisteredUserController extends Controller
 {
     /**
      * Tampilkan halaman form registrasi penjual.
+     * (GET /register)
      */
     public function create(): View
     {
-        // ini yang dipakai oleh route GET /register
-        return view('auth.register');
+        // ambil semua provinsi untuk dropdown
+        $provinces = Province::orderBy('name')->get();
+
+        return view('auth.register', [
+            'provinces' => $provinces,
+        ]);
     }
 
     /**
      * Handle request registrasi penjual.
+     * (POST /register)
      */
     public function store(Request $request): RedirectResponse
     {
@@ -39,11 +46,12 @@ class RegisteredUserController extends Controller
             'nama_toko'         => ['required', 'string', 'max:255'],
             'deskripsi_singkat' => ['nullable', 'string'],
 
-            // Alamat
+            // Alamat (INI HARUS SAMA DENGAN NAME DI FORM & KOLOM DI TABEL USERS)
             'alamat_pic'     => ['required', 'string', 'max:255'],
             'rt'             => ['required', 'string', 'max:5'],
             'rw'             => ['required', 'string', 'max:5'],
             'nama_kelurahan' => ['required', 'string', 'max:100'],
+            'kecamatan'      => ['required', 'string', 'max:100'],
             'kabupaten_kota' => ['required', 'string', 'max:100'],
             'provinsi'       => ['required', 'string', 'max:100'],
 
@@ -61,7 +69,7 @@ class RegisteredUserController extends Controller
             ? $request->file('file_upload_ktp_pic')->store('ktp_pic', 'public')
             : null;
 
-        // sementara masih simpan di tabel users seperti sebelumnya
+        // simpan semua data ke tabel users
         $user = User::create([
             'name'     => $validated['name'],
             'email'    => $validated['email'],
@@ -71,16 +79,20 @@ class RegisteredUserController extends Controller
             'role'              => 'penjual',
             'status_verifikasi' => 'pending',
 
-            // (kalau kamu masih punya kolom-kolom tambahan di users)
+            // Data toko
             'nama_toko'         => $validated['nama_toko'],
             'deskripsi_singkat' => $validated['deskripsi_singkat'] ?? null,
+
+            // Alamat (PASTIKAN KEY SAMA DENGAN KOLOM DI MIGRATION USERS)
             'no_handphone_pic'  => $validated['no_handphone_pic'],
             'alamat_pic'        => $validated['alamat_pic'],
             'rt'                => $validated['rt'],
             'rw'                => $validated['rw'],
             'nama_kelurahan'    => $validated['nama_kelurahan'],
             'kabupaten_kota'    => $validated['kabupaten_kota'],
-            'propinsi'          => $validated['provinsi'],
+            'provinsi'          => $validated['provinsi'], // <-- sudah bener, bukan "propinsi"
+
+            // Dokumen
             'no_ktp_pic'        => $validated['no_ktp_pic'],
             'foto_pic'          => $fotoPath,
             'file_upload_ktp_pic' => $ktpPath,
