@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EasyMart - Marketplace Kampus</title>
+    <title>Hasil Pencarian - EasyMart</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
     <style>
         body { background-color: #f7f6f2; }
@@ -13,12 +12,11 @@
         .text-brand-green { color: #2e603f; }
         .bg-brand-green { background-color: #1a432b; }
         .hover-bg-brand:hover { background-color: #2e603f; }
-        .text-brand-light { color: #a5c0a8; }
-        .bg-brand-light { background-color: #e8f5e9; }
     </style>
 </head>
 <body class="font-sans antialiased text-gray-900">
     
+    <!-- Navbar -->
     <nav class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16 gap-4">
@@ -39,7 +37,7 @@
                                name="q" 
                                placeholder="Cari produk, toko..." 
                                class="w-full pl-11 pr-4 py-2.5 border border-gray-300 rounded-full focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
-                               value="{{ request('q') }}">
+                               value="{{ $query }}">
                         <svg class="absolute left-4 top-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
@@ -48,8 +46,8 @@
 
                 <!-- Menu Links (Desktop) -->
                 <div class="hidden md:flex items-center space-x-6">
-                    <a href="#" class="text-gray-600 hover:text-brand-green transition font-medium">Beranda</a>
-                    <a href="#produk" class="text-gray-600 hover:text-brand-green transition font-medium">Produk</a>
+                    <a href="/" class="text-gray-600 hover:text-brand-green transition font-medium">Beranda</a>
+                    <a href="/#produk" class="text-gray-600 hover:text-brand-green transition font-medium">Produk</a>
                     
                     @auth
                         @if(Auth::user()->seller)
@@ -105,7 +103,7 @@
                            name="q" 
                            placeholder="Cari produk, toko..." 
                            class="w-full pl-11 pr-4 py-2.5 border border-gray-300 rounded-full focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                           value="{{ request('q') }}">
+                           value="{{ $query }}">
                     <svg class="absolute left-4 top-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
@@ -113,8 +111,8 @@
             </div>
 
             <div class="px-4 pb-3 space-y-3">
-                <a href="#" class="block text-gray-700 hover:text-brand-green py-2">Beranda</a>
-                <a href="#produk" class="block text-gray-700 hover:text-brand-green py-2">Produk</a>
+                <a href="/" class="block text-gray-700 hover:text-brand-green py-2">Beranda</a>
+                <a href="/#produk" class="block text-gray-700 hover:text-brand-green py-2">Produk</a>
                 @auth
                     @if(Auth::user()->seller)
                         <a href="{{ route('seller.dashboard') }}" class="block text-brand-green font-bold py-2">Toko Saya</a>
@@ -137,105 +135,102 @@
         </div>
     </nav>
 
-    <section class="bg-brand-green text-white py-20 relative overflow-hidden">
-        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-96 h-96 rounded-full bg-white opacity-5 z-0"></div>
-        <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-72 h-72 rounded-full bg-green-400 opacity-10 z-0"></div>
-
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div class="grid md:grid-cols-2 gap-12 items-center">
-                <div class="space-y-6 text-center md:text-left">
-                    <h1 class="text-4xl md:text-6xl font-bold leading-tight">
-                        Katalog Marketplace<br>
-                        <span class="text-green-300">Terpercaya</span>
-                    </h1>
-                    <p class="text-xl text-green-100">
-                        Lihat Produk Impianmu Tanpa Ribet!
-                    </p>
-                    <p class="text-lg text-green-50/80">
-                        Temukan kebutuhan kuliah, makanan, hingga jasa print terdekat di kampusmu.
-                    </p>
-                    <div class="flex flex-wrap gap-4 pt-4 justify-center md:justify-start">
-                        <a href="#produk" class="px-8 py-3 bg-white text-brand-green rounded-full font-bold hover:bg-green-50 transition shadow-lg transform hover:-translate-y-1">
-                            Jelajahi Sekarang
-                        </a>
-                    </div>
-                </div>
-                <div class="hidden md:block">
-                    <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20 transform rotate-2 hover:rotate-0 transition duration-500">
-                         <img src="images/home.png" alt="Hero Image" class="rounded-lg shadow-2xl w-full">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="py-16">
+    <!-- Search Results Section -->
+    <section class="py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="text-center p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition border border-gray-100">
-                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-brand-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2 text-brand-dark">Cepat & Mudah</h3>
-                    <p class="text-gray-600">Temukan produk yang kamu butuhkan dengan cepat.</p>
-                </div>
-                <div class="text-center p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition border border-gray-100">
-                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-brand-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2 text-brand-dark">Komunitas Sekitar</h3>
-                    <p class="text-gray-600">Lihat produk disekitarmu.</p>
-                </div>
-                <div class="text-center p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition border border-gray-100">
-                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-brand-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                    </div>
-                    <h3 class="text-xl font-semibold mb-2 text-brand-dark">Aman & Terpercaya</h3>
-                    <p class="text-gray-600">Transaksi aman dengan sistem verifikasi pengguna.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="produk" class="py-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold text-brand-dark mb-4">Katalog Terbaru</h2>
-                <p class="text-gray-600">Produk pilihan dari penjual terpercaya</p>
+            <!-- Search Info -->
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-brand-dark mb-2">
+                    Hasil untuk "{{ $query }}"
+                </h2>
+                <p class="text-gray-600">
+                    Ditemukan {{ $total }} produk
+                </p>
             </div>
 
-            <div class="flex flex-wrap justify-center gap-2 mb-10">
-                <button class="px-6 py-2 bg-brand-green text-white rounded-full font-medium shadow-md">Semua</button>
-                <button class="px-6 py-2 bg-white border border-gray-200 text-gray-600 rounded-full font-medium hover:bg-green-50 transition">Pakaian</button>
-                <button class="px-6 py-2 bg-white border border-gray-200 text-gray-600 rounded-full font-medium hover:bg-green-50 transition">Makanan</button>
-            </div>
-
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                @forelse($products as $product)
-                    <x-product-card :product="$product" />
-                @empty
-                    <div class="col-span-full text-center py-16 bg-white rounded-xl shadow-sm border border-dashed border-gray-300">
-                        <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
-                        <h3 class="text-xl font-semibold text-gray-700 mb-2">Belum Ada Produk</h3>
-                        <p class="text-gray-500 mb-6">Jadilah penjual pertama!</p>
-                        @auth
-                            @if(!Auth::user()->seller)
-                                <a href="{{ route('seller.register') }}" class="inline-block px-6 py-3 bg-brand-green text-white rounded-full hover:bg-green-800 transition font-medium">
-                                    Mulai Berjualan
-                                </a>
-                            @endif
-                        @else
-                            <a href="{{ route('register') }}" class="inline-block px-6 py-3 bg-brand-green text-white rounded-full hover:bg-green-800 transition font-medium">
-                                Daftar Sekarang
+            <!-- Products Grid -->
+            @if($products->count() > 0)
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    @foreach($products as $product)
+                        <div class="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100 group">
+                            <!-- Product Image -->
+                            <a href="{{ route('products.show', $product) }}" class="block relative overflow-hidden">
+                                @if($product->image)
+                                    <img src="{{ asset('storage/' . $product->image) }}" 
+                                         alt="{{ $product->name }}" 
+                                         class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300">
+                                @else
+                                    <div class="w-full h-48 bg-gray-100 flex items-center justify-center">
+                                        <svg class="w-16 h-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                    </div>
+                                @endif
                             </a>
-                        @endauth
-                    </div>
-                @endforelse
-            </div>
+
+                            <!-- Product Info -->
+                            <div class="p-4">
+                                <a href="{{ route('products.show', $product) }}" 
+                                   class="block hover:text-brand-green transition-colors">
+                                    <h3 class="text-base font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[3rem]">
+                                        {{ $product->name }}
+                                    </h3>
+                                </a>
+                                
+                                <!-- Price -->
+                                <div class="mb-3">
+                                    <span class="text-xl font-bold text-brand-green">
+                                        Rp {{ number_format($product->price, 0, ',', '.') }}
+                                    </span>
+                                </div>
+
+                                <!-- Seller & Stock Info -->
+                                <div class="flex items-center justify-between text-sm text-gray-600 border-t pt-3">
+                                    <div class="flex items-center">
+                                        <svg class="w-4 h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                        </svg>
+                                        <span class="truncate">{{ $product->seller->storeName }}</span>
+                                    </div>
+                                    <span class="text-gray-500 text-xs whitespace-nowrap ml-2">
+                                        Stok: {{ $product->stock }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                <!-- Pagination -->
+                <div class="mt-10">
+                    {{ $products->links() }}
+                </div>
+            @else
+                <!-- No Results -->
+                <div class="bg-white rounded-2xl shadow-sm p-16 text-center border border-dashed border-gray-300">
+                    <svg class="w-24 h-24 mx-auto text-gray-300 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3">
+                        Produk tidak ditemukan
+                    </h3>
+                    <p class="text-gray-600 mb-8 text-lg">
+                        Maaf, kami tidak menemukan produk yang cocok dengan pencarian "<span class="font-semibold text-brand-green">{{ $query }}</span>"
+                    </p>
+                    <a href="{{ url('/') }}" 
+                       class="inline-flex items-center px-8 py-3 bg-brand-green text-white font-semibold rounded-full hover:bg-green-800 transition-all shadow-lg transform hover:-translate-y-1">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        Kembali ke Beranda
+                    </a>
+                </div>
+            @endif
         </div>
     </section>
 
-    <footer class="bg-gray-900 text-gray-300 py-12">
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-12 mt-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid md:grid-cols-4 gap-8 mb-8">
                 <div>
@@ -248,8 +243,8 @@
                 <div>
                     <h3 class="text-white font-semibold mb-4">Menu</h3>
                     <ul class="space-y-2 text-sm">
-                        <li><a href="#" class="hover:text-brand-green transition">Beranda</a></li>
-                        <li><a href="#produk" class="hover:text-brand-green transition">Produk</a></li>
+                        <li><a href="/" class="hover:text-brand-green transition">Beranda</a></li>
+                        <li><a href="/#produk" class="hover:text-brand-green transition">Produk</a></li>
                     </ul>
                 </div>
                 <div>
