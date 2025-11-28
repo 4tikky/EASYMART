@@ -1,33 +1,35 @@
 @props(['product'])
 
-<div class="group bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 overflow-hidden transition-all duration-300 transform hover:-translate-y-1 flex flex-col h-full">
-    
-    <div class="relative h-48 w-full bg-gray-100 overflow-hidden">
+<div class="bg-white rounded-xl shadow-sm hover:shadow-xl transition duration-300 border border-gray-100 overflow-hidden group flex flex-col h-full">
+    <div class="relative overflow-hidden aspect-square bg-gray-200">
         @if($product->image)
-            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
+            <img src="{{ asset('storage/' . $product->image) }}" 
+                 alt="{{ $product->name }}" 
+                 class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
         @else
-            <img src="https://placehold.co/400x400/e2e8f0/a5c0a8?text=No+Image" class="w-full h-full object-cover opacity-50">
+            <div class="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+                <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            </div>
         @endif
-        
-        <span class="absolute top-3 left-3 bg-white/90 backdrop-blur-md text-gray-800 text-xs font-bold px-2.5 py-1 rounded-lg shadow-sm">
+        <span class="absolute top-2 left-2 bg-white/90 backdrop-blur text-xs font-bold px-2 py-1 rounded text-brand-dark shadow-sm">
             {{ $product->category }}
         </span>
     </div>
 
-    <div class="p-5 flex flex-col flex-grow">
-        <div class="flex items-center text-xs text-gray-500 mb-2">
-            <svg class="w-3.5 h-3.5 mr-1 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-            <span class="truncate">{{ $product->seller->storeName ?? 'Toko Tidak Diketahui' }}</span>
-        </div>
-
-        <h3 class="text-lg font-bold text-gray-800 line-clamp-2 leading-snug mb-2 group-hover:text-brand-green-dark transition">
+    <div class="p-4 flex flex-col flex-grow">
+        <p class="text-xs text-gray-500 mb-1 flex items-center gap-1">
+            <svg class="w-3 h-3 text-brand-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+            {{ $product->seller->storeName ?? 'Toko' }}
+        </p>
+        
+        <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2 leading-tight group-hover:text-brand-green transition">
             {{ $product->name }}
         </h3>
-
+        
         <div class="mt-auto pt-3 border-t border-gray-50">
-            <span class="text-lg font-extrabold text-brand-green-dark block w-full">
+            <p class="text-lg font-bold text-brand-green">
                 Rp {{ number_format($product->price, 0, ',', '.') }}
-            </span>
+            </p>
         </div>
     </div>
 </div>
