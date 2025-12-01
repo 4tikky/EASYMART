@@ -12,16 +12,20 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('reviews', function (Blueprint $table) {
-            // Hapus foreign key constraint dulu
+            // Hapus semua foreign key constraint dulu
+            $table->dropForeign(['product_id']);
             $table->dropForeign(['user_id']);
-            
-            // Hapus unique constraint
-            $table->dropUnique(['product_id', 'user_id']);
+        });
+        
+        Schema::table('reviews', function (Blueprint $table) {
+            // Hapus unique constraint setelah foreign key dihapus
+            $table->dropUnique('reviews_product_id_user_id_unique');
             
             // Ubah user_id menjadi nullable
             $table->unsignedBigInteger('user_id')->nullable()->change();
             
-            // Tambah kembali foreign key tapi nullable
+            // Tambah kembali foreign key
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             
             // Tambah kolom untuk guest reviewer
