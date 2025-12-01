@@ -24,4 +24,22 @@ class Product extends Model
     {
         return $this->belongsTo(Seller::class); // Pastikan kamu punya model Seller
     }
+
+    // Relasi: Produk memiliki banyak Review
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    // Helper: Mendapatkan rata-rata rating
+    public function averageRating()
+    {
+        return $this->reviews()->avg('rating') ?? 0;
+    }
+
+    // Helper: Mendapatkan total review
+    public function totalReviews()
+    {
+        return $this->reviews()->count();
+    }
 }

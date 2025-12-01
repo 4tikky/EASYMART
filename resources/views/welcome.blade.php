@@ -1,3 +1,12 @@
+@php
+    $selectedCategory = request('category', 'all');
+    $filteredProducts = $selectedCategory === 'all' 
+        ? $products 
+        : $products->filter(function($product) use ($selectedCategory) {
+            return $product->category === $selectedCategory;
+          });
+@endphp
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -22,7 +31,6 @@
     <nav class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16 gap-4">
-                <!-- Logo -->
                 <div class="flex items-center flex-shrink-0">
                     <a href="/" class="flex items-center space-x-2">
                         <svg class="w-8 h-8 text-brand-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -32,7 +40,6 @@
                     </a>
                 </div>
 
-                <!-- Search Bar (Desktop) -->
                 <div class="hidden lg:block flex-1 max-w-xl mx-4">
                     <form action="{{ route('products.search') }}" method="GET" class="relative">
                         <input type="text" 
@@ -46,8 +53,7 @@
                     </form>
                 </div>
 
-                <!-- Menu Links (Desktop) -->
-                <div class="hidden md:flex items-center space-x-6">
+                <div class="hidden md:flex items-center space-x-8">
                     <a href="#" class="text-gray-600 hover:text-brand-green transition font-medium">Beranda</a>
                     <a href="#produk" class="text-gray-600 hover:text-brand-green transition font-medium">Produk</a>
                     
@@ -62,11 +68,10 @@
                     @endauth
                 </div>
 
-                <!-- Auth Buttons (Desktop) -->
-                <div class="hidden md:flex items-center space-x-3 flex-shrink-0">
+                <div class="flex items-center space-x-4">
                     @auth
                         <div class="flex items-center space-x-3">
-                            <span class="text-sm text-gray-700 hidden lg:inline">Hi, {{ Auth::user()->name }}</span>
+                            <span class="text-sm text-gray-700 hidden md:inline">Hi, {{ Auth::user()->name }}</span>
                             <a href="{{ route('dashboard') }}" class="px-4 py-2 bg-brand-green text-white rounded-full hover:bg-green-800 transition text-sm shadow-md">
                                 Dashboard
                             </a>
@@ -85,7 +90,6 @@
                     @endauth
                 </div>
 
-                <!-- Mobile Menu Button -->
                 <div class="md:hidden">
                     <button id="mobile-menu-btn" class="text-gray-700 hover:text-brand-green">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -96,42 +100,18 @@
             </div>
         </div>
 
-        <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200 bg-white">
-            <!-- Mobile Search Bar -->
-            <div class="px-4 pt-4 pb-3">
-                <form action="{{ route('products.search') }}" method="GET" class="relative">
-                    <input type="text" 
-                           name="q" 
-                           placeholder="Cari produk, toko..." 
-                           class="w-full pl-11 pr-4 py-2.5 border border-gray-300 rounded-full focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                           value="{{ request('q') }}">
-                    <svg class="absolute left-4 top-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                </form>
-            </div>
-
-            <div class="px-4 pb-3 space-y-3">
-                <a href="#" class="block text-gray-700 hover:text-brand-green py-2">Beranda</a>
-                <a href="#produk" class="block text-gray-700 hover:text-brand-green py-2">Produk</a>
+            <div class="px-4 py-3 space-y-3">
+                <a href="#" class="block text-gray-700 hover:text-brand-green">Beranda</a>
+                <a href="#produk" class="block text-gray-700 hover:text-brand-green">Produk</a>
                 @auth
                     @if(Auth::user()->seller)
-                        <a href="{{ route('seller.dashboard') }}" class="block text-brand-green font-bold py-2">Toko Saya</a>
+                        <a href="{{ route('seller.dashboard') }}" class="block text-brand-green font-bold">Toko Saya</a>
                     @else
-                        <a href="{{ route('seller.register') }}" class="block text-brand-green py-2">Buka Toko Gratis</a>
+                        <a href="{{ route('seller.register') }}" class="block text-brand-green">Buka Toko Gratis</a>
                     @endif
-                    <a href="{{ route('dashboard') }}" class="block bg-brand-green text-white px-4 py-2 rounded-full text-center">Dashboard</a>
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="w-full text-left text-red-600 hover:text-red-700 py-2">
-                            Keluar
-                        </button>
-                    </form>
                 @else
-                    <a href="{{ route('login') }}" class="block text-gray-700 hover:text-brand-green py-2">Toko Saya</a>
-                    <a href="{{ route('register') }}" class="block text-brand-green hover:text-brand-dark py-2">Daftar</a>
-                    <a href="{{ route('login') }}" class="block bg-brand-green text-white px-4 py-2 rounded-full text-center">Masuk</a>
+                    <a href="{{ route('login') }}" class="block text-gray-700 hover:text-brand-green">Toko Saya</a>
                 @endauth
             </div>
         </div>
@@ -204,20 +184,42 @@
                 <p class="text-gray-600">Produk pilihan dari penjual terpercaya</p>
             </div>
 
+            <!-- Filter Kategori (Fungsional) -->
             <div class="flex flex-wrap justify-center gap-2 mb-10">
-                <button class="px-6 py-2 bg-brand-green text-white rounded-full font-medium shadow-md">Semua</button>
-                <button class="px-6 py-2 bg-white border border-gray-200 text-gray-600 rounded-full font-medium hover:bg-green-50 transition">Pakaian</button>
-                <button class="px-6 py-2 bg-white border border-gray-200 text-gray-600 rounded-full font-medium hover:bg-green-50 transition">Makanan</button>
+                <a href="/?category=all#produk" 
+                   class="px-6 py-2 rounded-full font-medium shadow-md transition {{ $selectedCategory === 'all' ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-green-50' }}">
+                    Semua
+                </a>
+                <a href="/?category=Pakaian Wanita#produk" 
+                   class="px-6 py-2 rounded-full font-medium shadow-md transition {{ $selectedCategory === 'Pakaian Wanita' ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-green-50' }}">
+                    Pakaian Wanita
+                </a>
+                <a href="/?category=Pakaian Pria#produk" 
+                   class="px-6 py-2 rounded-full font-medium shadow-md transition {{ $selectedCategory === 'Pakaian Pria' ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-green-50' }}">
+                    Pakaian Pria
+                </a>
+                <a href="/?category=Aksesoris#produk" 
+                   class="px-6 py-2 rounded-full font-medium shadow-md transition {{ $selectedCategory === 'Aksesoris' ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-green-50' }}">
+                    Aksesoris
+                </a>
+                <a href="/?category=Rajutan#produk" 
+                   class="px-6 py-2 rounded-full font-medium shadow-md transition {{ $selectedCategory === 'Rajutan' ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-green-50' }}">
+                    Rajutan
+                </a>
             </div>
 
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                @forelse($products as $product)
+                @forelse($filteredProducts as $product)
                     <x-product-card :product="$product" />
                 @empty
                     <div class="col-span-full text-center py-16 bg-white rounded-xl shadow-sm border border-dashed border-gray-300">
                         <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
-                        <h3 class="text-xl font-semibold text-gray-700 mb-2">Belum Ada Produk</h3>
-                        <p class="text-gray-500 mb-6">Jadilah penjual pertama!</p>
+                        <h3 class="text-xl font-semibold text-gray-700 mb-2">
+                            {{ $selectedCategory === 'all' ? 'Belum Ada Produk' : 'Tidak ada produk di kategori ini' }}
+                        </h3>
+                        <p class="text-gray-500 mb-6">
+                            {{ $selectedCategory === 'all' ? 'Jadilah penjual pertama!' : 'Coba kategori lain atau lihat semua produk' }}
+                        </p>
                         @auth
                             @if(!Auth::user()->seller)
                                 <a href="{{ route('seller.register') }}" class="inline-block px-6 py-3 bg-brand-green text-white rounded-full hover:bg-green-800 transition font-medium">

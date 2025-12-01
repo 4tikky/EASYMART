@@ -55,6 +55,14 @@ Route::get('/products/search', [ProductController::class, 'search'])->name('prod
 // Route untuk Detail Produk (opsional, jika belum ada)
 Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
 
+// Route untuk Review Produk (tidak perlu login lagi)
+Route::post('/products/{product}/reviews', [ProductController::class, 'storeReview'])->name('products.reviews.store');
+
+// Route untuk hapus review (hanya untuk logged in user)
+Route::middleware('auth')->group(function () {
+    Route::delete('/products/{product}/reviews/{review}', [ProductController::class, 'destroyReview'])->name('products.reviews.destroy');
+});
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -95,6 +103,18 @@ Route::middleware(['auth'])->group(function () {
     
     // 3. TAMBAHKAN INI: Proses Simpan Produk
     Route::post('/seller/product', [SellerController::class, 'storeProduct'])->name('seller.product.store');
+    
+    // Edit Produk
+    Route::get('/seller/product/{id}/edit', [SellerController::class, 'editProduct'])->name('seller.product.edit');
+    Route::put('/seller/product/{id}', [SellerController::class, 'updateProduct'])->name('seller.product.update');
+    
+    // Hapus Produk
+    Route::delete('/seller/product/{id}', [SellerController::class, 'deleteProduct'])->name('seller.product.delete');
+    
+    // Export PDF Reports
+    Route::get('/seller/export/stock', [SellerController::class, 'exportStockReport'])->name('seller.export.stock');
+    Route::get('/seller/export/rating', [SellerController::class, 'exportRatingReport'])->name('seller.export.rating');
+    Route::get('/seller/export/reorder', [SellerController::class, 'exportReorderReport'])->name('seller.export.reorder');
 });
 
 require __DIR__.'/auth.php';
