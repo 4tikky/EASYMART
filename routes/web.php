@@ -37,6 +37,30 @@ Route::middleware(['auth', 'platform'])
         // Reject seller
         Route::post('/sellers/{seller}/reject', [SellerApprovalController::class, 'reject'])
             ->name('sellers.reject');
+
+        // Laporan PDF: Akun penjual berdasarkan status
+        Route::get('/reports/sellers-status', function () {
+            return back()->with(
+                'status',
+                'Fitur laporan PDF SRS-MartPlace-09 (akun penjual berdasarkan status) belum diimplementasikan.'
+            );
+        })->name('reports.sellers-status');
+
+        // SRS-MartPlace-10: laporan toko per provinsi
+        Route::get('/reports/stores-by-province', function () {
+            return back()->with(
+                'status',
+                'Fitur laporan PDF SRS-MartPlace-10 (toko per provinsi) belum diimplementasikan.'
+            );
+        })->name('reports.stores-by-province');
+
+        // SRS-MartPlace-11: laporan produk berdasarkan rating
+        Route::get('/reports/products-by-rating', function () {
+            return back()->with(
+                'status',
+                'Fitur laporan PDF SRS-MartPlace-11 (produk berdasarkan rating) belum diimplementasikan.'
+            );
+        })->name('reports.products-by-rating');
     });
 
 // Category Management Routes (Platform Admin)
