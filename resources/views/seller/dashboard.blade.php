@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div x-data="{ showModal: false }">
+    <div>
 
         <div class="bg-green-700 pb-24 pt-12">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -13,7 +13,7 @@
                         </p>
                     </div>
                     
-                    <button @click="showModal = true" 
+                    <button onclick="showAddProductModal()" type="button"
                        class="bg-white text-green-700 hover:bg-green-50 font-bold py-2 px-6 rounded-full shadow-lg transition transform hover:-translate-y-1 flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                         Upload Produk
@@ -124,153 +124,12 @@
                 </div>
             </div>
         </div>
-
-        <div x-show="showModal" 
-             style="display: none;" 
-             class="fixed inset-0 z-50 overflow-y-auto" 
-             aria-labelledby="modal-title" role="dialog" aria-modal="true">
-            
-            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div @click="showModal = false" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
-
-                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
-                    
-                    <div class="bg-green-700 px-4 py-3 sm:px-6 flex justify-between items-center">
-                        <h3 class="text-lg leading-6 font-medium text-white" id="modal-title">
-                            Tambah Produk Baru
-                        </h3>
-                        <button @click="showModal = false" class="text-green-200 hover:text-white">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                        </button>
-                    </div>
-
-                    <form action="{{ route('seller.product.store') }}" method="POST" enctype="multipart/form-data" id="productForm">
-                        @csrf
-                        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                            
-                            <div class="mb-4">
-                                <label class="block text-gray-700 text-sm font-bold mb-2">Nama Produk</label>
-                                <input type="text" name="name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-                                @error('name')
-                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div class="grid grid-cols-2 gap-4 mb-4">
-                                <div>
-                                    <label class="block text-gray-700 text-sm font-bold mb-2">Harga (Rp)</label>
-                                    <input type="number" name="price" id="price" min="0" step="0.01" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-                                    @error('price')
-                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                                <div>
-                                    <label class="block text-gray-700 text-sm font-bold mb-2">Stok</label>
-                                    <input type="number" name="stock" id="stock" min="0" step="1" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-                                    @error('stock')
-                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                    @enderror
-                                </div>
-                            </div>
-
-                            <div class="mb-4">
-                                <label class="block text-gray-700 text-sm font-bold mb-2">Kategori</label>
-                                <select name="category" class="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
-                                    <option value="Pakaian Wanita">Pakaian Wanita</option>
-                                    <option value="Pakaian Pria">Pakaian Pria</option>
-                                    <option value="Aksesoris">Aksesoris</option>
-                                    <option value="Rajutan">Rajutan</option>
-                                </select>
-                                @error('category')
-                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                            <div class="mb-4">
-                                <label class="block text-gray-700 text-sm font-bold mb-2">Deskripsi</label>
-                                <textarea name="description" rows="3" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
-                                @error('description')
-                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                             <div class="mb-4">
-                                <label class="block text-gray-700 text-sm font-bold mb-2">Foto Produk</label>
-                                <input type="file" name="image" accept="image/jpeg,image/png,image/jpg" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"/>
-                                <p class="text-xs text-gray-500 mt-1">Format: JPG, JPEG, PNG. Maksimal 2MB</p>
-                                @error('image')
-                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                                @enderror
-                            </div>
-
-                        </div>
-                        
-                        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                            <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
-                                Simpan Produk
-                            </button>
-                            <button @click="showModal = false" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                                Batal
-                            </button>
-                        </div>
-                    </form>
-
-                </div>
-            </div>
-        </div>
-        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{ asset('js/seller-dashboard.js') }}"></script>
     <script>
-        // Validasi form produk
-        document.getElementById('productForm')?.addEventListener('submit', function(e) {
-            const price = parseFloat(document.getElementById('price').value);
-            const stock = parseInt(document.getElementById('stock').value);
-
-            if (price < 0) {
-                e.preventDefault();
-                alert('❌ Harga tidak boleh kurang dari 0!');
-                document.getElementById('price').focus();
-                return false;
-            }
-
-            if (stock < 0) {
-                e.preventDefault();
-                alert('❌ Stok tidak boleh kurang dari 0!');
-                document.getElementById('stock').focus();
-                return false;
-            }
-
-            if (!Number.isInteger(stock)) {
-                e.preventDefault();
-                alert('❌ Stok harus berupa bilangan bulat!');
-                document.getElementById('stock').focus();
-                return false;
-            }
-        });
-
-        // Validasi real-time saat input
-        document.getElementById('price')?.addEventListener('input', function() {
-            if (parseFloat(this.value) < 0) {
-                this.setCustomValidity('Harga tidak boleh negatif');
-                this.reportValidity();
-            } else {
-                this.setCustomValidity('');
-            }
-        });
-
-        document.getElementById('stock')?.addEventListener('input', function() {
-            if (parseInt(this.value) < 0) {
-                this.setCustomValidity('Stok tidak boleh negatif');
-                this.reportValidity();
-            } else {
-                this.setCustomValidity('');
-            }
-        });
-
         // Chart.js
         const labels = @json($productNames);
         const stockData = @json($productStocks);
