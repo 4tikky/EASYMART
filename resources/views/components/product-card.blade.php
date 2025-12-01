@@ -1,6 +1,6 @@
 @props(['product'])
 
-<div class="bg-white rounded-xl shadow-sm hover:shadow-xl transition duration-300 border border-gray-100 overflow-hidden group flex flex-col h-full">
+<a href="{{ route('products.show', $product) }}" class="bg-white rounded-xl shadow-sm hover:shadow-xl transition duration-300 border border-gray-100 overflow-hidden group flex flex-col h-full">
     <div class="relative overflow-hidden aspect-square bg-gray-200">
         @if($product->image)
             <img src="{{ asset('storage/' . $product->image) }}" 
@@ -32,4 +32,4 @@
             </p>
         </div>
     </div>
-</div>
+</a>

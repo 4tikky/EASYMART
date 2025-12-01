@@ -74,8 +74,24 @@
             </div>
 
             <div class="bg-white shadow-lg rounded-xl overflow-hidden mb-12">
-                <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+                <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
                     <h3 class="text-lg font-bold text-gray-700">Daftar Produk Anda</h3>
+                    
+                    <!-- Tombol Export PDF -->
+                    <div class="flex gap-2">
+                        <a href="{{ route('seller.export.stock') }}" class="inline-flex items-center px-3 py-2 bg-green-600 text-white text-xs font-semibold rounded hover:bg-green-700 transition">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            PDF Stock
+                        </a>
+                        <a href="{{ route('seller.export.rating') }}" class="inline-flex items-center px-3 py-2 bg-red-600 text-white text-xs font-semibold rounded hover:bg-red-700 transition">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            PDF Rating
+                        </a>
+                        <a href="{{ route('seller.export.reorder') }}" class="inline-flex items-center px-3 py-2 bg-yellow-600 text-white text-xs font-semibold rounded hover:bg-yellow-700 transition">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            PDF Reorder
+                        </a>
+                    </div>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full leading-normal">
@@ -93,7 +109,14 @@
                                 <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm font-medium text-gray-900">{{ $product->name }}</td>
                                 <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">Rp {{ number_format($product->price) }}</td>
                                 <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">{{ $product->stock }}</td>
-                                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm text-blue-600 cursor-pointer hover:underline">Edit</td>
+                                <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">
+                                    <button onclick="editProduct({{ $product->id }})" class="text-blue-600 hover:text-blue-800 font-semibold mr-3">Edit</button>
+                                    <form action="{{ route('seller.product.delete', $product->id) }}" method="POST" class="inline" onsubmit="return confirm('Yakin ingin menghapus produk ini?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-600 hover:text-red-800 font-semibold">Hapus</button>
+                                    </form>
+                                </td>
                             </tr>
                             @endforeach
                         </tbody>
@@ -122,23 +145,32 @@
                         </button>
                     </div>
 
-                    <form action="{{ route('seller.product.store') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('seller.product.store') }}" method="POST" enctype="multipart/form-data" id="productForm">
                         @csrf
                         <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                             
                             <div class="mb-4">
                                 <label class="block text-gray-700 text-sm font-bold mb-2">Nama Produk</label>
                                 <input type="text" name="name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                                @error('name')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <div class="grid grid-cols-2 gap-4 mb-4">
                                 <div>
                                     <label class="block text-gray-700 text-sm font-bold mb-2">Harga (Rp)</label>
-                                    <input type="number" name="price" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                                    <input type="number" name="price" id="price" min="0" step="0.01" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                                    @error('price')
+                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                    @enderror
                                 </div>
                                 <div>
                                     <label class="block text-gray-700 text-sm font-bold mb-2">Stok</label>
-                                    <input type="number" name="stock" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                                    <input type="number" name="stock" id="stock" min="0" step="1" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                                    @error('stock')
+                                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                    @enderror
                                 </div>
                             </div>
 
@@ -150,16 +182,26 @@
                                     <option value="Aksesoris">Aksesoris</option>
                                     <option value="Rajutan">Rajutan</option>
                                 </select>
+                                @error('category')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
 
                             <div class="mb-4">
                                 <label class="block text-gray-700 text-sm font-bold mb-2">Deskripsi</label>
                                 <textarea name="description" rows="3" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+                                @error('description')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
 
                              <div class="mb-4">
                                 <label class="block text-gray-700 text-sm font-bold mb-2">Foto Produk</label>
-                                <input type="file" name="image" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"/>
+                                <input type="file" name="image" accept="image/jpeg,image/png,image/jpg" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"/>
+                                <p class="text-xs text-gray-500 mt-1">Format: JPG, JPEG, PNG. Maksimal 2MB</p>
+                                @error('image')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
 
                         </div>
@@ -180,7 +222,56 @@
         </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('js/seller-dashboard.js') }}"></script>
     <script>
+        // Validasi form produk
+        document.getElementById('productForm')?.addEventListener('submit', function(e) {
+            const price = parseFloat(document.getElementById('price').value);
+            const stock = parseInt(document.getElementById('stock').value);
+
+            if (price < 0) {
+                e.preventDefault();
+                alert('❌ Harga tidak boleh kurang dari 0!');
+                document.getElementById('price').focus();
+                return false;
+            }
+
+            if (stock < 0) {
+                e.preventDefault();
+                alert('❌ Stok tidak boleh kurang dari 0!');
+                document.getElementById('stock').focus();
+                return false;
+            }
+
+            if (!Number.isInteger(stock)) {
+                e.preventDefault();
+                alert('❌ Stok harus berupa bilangan bulat!');
+                document.getElementById('stock').focus();
+                return false;
+            }
+        });
+
+        // Validasi real-time saat input
+        document.getElementById('price')?.addEventListener('input', function() {
+            if (parseFloat(this.value) < 0) {
+                this.setCustomValidity('Harga tidak boleh negatif');
+                this.reportValidity();
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+
+        document.getElementById('stock')?.addEventListener('input', function() {
+            if (parseInt(this.value) < 0) {
+                this.setCustomValidity('Stok tidak boleh negatif');
+                this.reportValidity();
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+
+        // Chart.js
         const labels = @json($productNames);
         const stockData = @json($productStocks);
         const ratingData = @json($productRatings);

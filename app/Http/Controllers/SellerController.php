@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Seller;
-use App\Models\Product; 
+use App\Models\Product;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 
 class SellerController extends Controller
 {
@@ -66,16 +68,16 @@ class SellerController extends Controller
         }
 
         // 3. Ambil produk untuk grafik (SRS-MartPlace-08)
-        // Kita asumsikan relasi di model Seller namanya products()
-        $products = $seller->products; 
+        $products = $seller->products()->withAvg('reviews', 'rating')->get(); 
 
-        // Siapkan data sederhana untuk grafik
+        // Siapkan data untuk grafik
         $productNames = $products->pluck('name')->toArray();
         $productStocks = $products->pluck('stock')->toArray();
-        $productRatings = []; // Kosongin dulu kalau belum ada fitur review
+        $productRatings = $products->map(function($product) {
+            return round($product->reviews_avg_rating ?? 0, 1);
+        })->toArray();
 
         // 4. Kirim data ke View
-        // Perhatikan kita kirim variabel '$seller', bukan '$store' biar konsisten
         return view('seller.dashboard', compact('seller', 'products', 'productNames', 'productStocks', 'productRatings'));
     }
     // --- FUNGSI BARU: MENYIMPAN PRODUK DARI POP-UP ---
@@ -84,11 +86,16 @@ class SellerController extends Controller
         // 1. Validasi Input (Biar datanya aman)
         $request->validate([
             'name' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'stock' => 'required|numeric',
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
             'category' => 'required',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Maksimal 2MB
+        ], [
+            'price.min' => 'Harga tidak boleh negatif',
+            'price.numeric' => 'Harga harus berupa angka',
+            'stock.min' => 'Stok tidak boleh negatif',
+            'stock.integer' => 'Stok harus berupa bilangan bulat',
         ]);
 
         // 2. Proses Upload Gambar (Kalau user upload foto)
@@ -110,6 +117,128 @@ class SellerController extends Controller
         ]);
 
         // 4. Kembali ke Dashboard dengan pesan sukses
-        return redirect()->route('seller.dashboard')->with('success', 'Yeay! Produk berhasil ditambahkan! 🌸');
+        return redirect()->route('seller.dashboard')->with('success', 'Yeay! Produk berhasil ditambahkan!');
+    }
+
+    // Edit Produk
+    public function editProduct($id)
+    {
+        $product = Product::where('id', $id)
+            ->where('seller_id', Auth::user()->seller->id)
+            ->firstOrFail();
+
+        return response()->json($product);
+    }
+
+    // Update Produk
+    public function updateProduct(Request $request, $id)
+    {
+        $product = Product::where('id', $id)
+            ->where('seller_id', Auth::user()->seller->id)
+            ->firstOrFail();
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'category' => 'required|string|max:100',
+            'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        // Update gambar jika ada
+        $imagePath = $product->image;
+        if ($request->hasFile('image')) {
+            // Hapus gambar lama jika ada
+            if ($product->image && \Storage::disk('public')->exists($product->image)) {
+                \Storage::disk('public')->delete($product->image);
+            }
+            $imagePath = $request->file('image')->store('products', 'public');
+        }
+
+        $product->update([
+            'name' => $request->name,
+            'price' => $request->price,
+            'stock' => $request->stock,
+            'category' => $request->category,
+            'description' => $request->description,
+            'image' => $imagePath,
+        ]);
+
+        return redirect()->route('seller.dashboard')->with('success', 'Produk berhasil diupdate!');
+    }
+
+    // Hapus Produk
+    public function deleteProduct($id)
+    {
+        $product = Product::where('id', $id)
+            ->where('seller_id', Auth::user()->seller->id)
+            ->firstOrFail();
+
+        // Hapus gambar jika ada
+        if ($product->image && \Storage::disk('public')->exists($product->image)) {
+            \Storage::disk('public')->delete($product->image);
+        }
+
+        $product->delete();
+
+        return redirect()->route('seller.dashboard')->with('success', 'Produk berhasil dihapus!');
+    }
+
+    // Export PDF - Laporan Berdasarkan Stock
+    public function exportStockReport()
+    {
+        $seller = Auth::user()->seller;
+        $products = Product::where('seller_id', $seller->id)
+            ->withAvg('reviews', 'rating')
+            ->orderBy('stock', 'desc')
+            ->get();
+
+        $pdf = Pdf::loadView('seller.reports.stock', [
+            'products' => $products,
+            'seller' => $seller,
+            'date' => Carbon::now()->format('d-m-Y'),
+            'time' => Carbon::now()->format('H:i:s'),
+        ]);
+
+        return $pdf->download('Laporan_Stock_' . Carbon::now()->format('d-m-Y') . '.pdf');
+    }
+
+    // Export PDF - Laporan Berdasarkan Rating
+    public function exportRatingReport()
+    {
+        $seller = Auth::user()->seller;
+        $products = Product::where('seller_id', $seller->id)
+            ->withAvg('reviews', 'rating')
+            ->orderBy('reviews_avg_rating', 'desc')
+            ->get();
+
+        $pdf = Pdf::loadView('seller.reports.rating', [
+            'products' => $products,
+            'seller' => $seller,
+            'date' => Carbon::now()->format('d-m-Y'),
+            'time' => Carbon::now()->format('H:i:s'),
+        ]);
+
+        return $pdf->download('Laporan_Rating_' . Carbon::now()->format('d-m-Y') . '.pdf');
+    }
+
+    // Export PDF - Laporan Produk Segera Dipesan (Stock Rendah)
+    public function exportReorderReport()
+    {
+        $seller = Auth::user()->seller;
+        $products = Product::where('seller_id', $seller->id)
+            ->where('stock', '<', 10) // Produk dengan stock < 10
+            ->orderBy('stock', 'asc')
+            ->get();
+
+        $pdf = Pdf::loadView('seller.reports.reorder', [
+            'products' => $products,
+            'seller' => $seller,
+            'date' => Carbon::now()->format('d-m-Y'),
+            'time' => Carbon::now()->format('H:i:s'),
+        ]);
+
+        return $pdf->download('Laporan_Reorder_' . Carbon::now()->format('d-m-Y') . '.pdf');
     }
 }
