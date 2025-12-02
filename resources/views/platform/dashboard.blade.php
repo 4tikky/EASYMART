@@ -1,246 +1,244 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="utf-8">
-    <title>Dashboard Platform - EasyMart</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+@extends('layouts.platform')
 
-    {{-- Chart.js untuk grafik SRS-07 --}}
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
+@section('title', 'Dashboard Platform - EasyMart')
 
-<body class="font-sans antialiased" style="background-color:#f7f6f2;">
+@push('head')
+    {{-- Font Awesome & Google Fonts khusus dashboard --}}
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
 
-    {{-- HEADER BAR --}}
-    <header class="flex justify-between items-center px-10 py-4 bg-white shadow">
-        <div class="flex items-center gap-4">
-            <a href="{{ url('/') }}" class="text-gray-600 hover:text-brand-green-dark transition group" title="Kembali ke Beranda">
-                <svg class="w-6 h-6 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                </svg>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f7f6f2 0%, #e8f5e8 100%);
+            color: #333;
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        .card-hover:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        .btn-gradient {
+            background: linear-gradient(45deg, #1a432b, #2e603f);
+            transition: all 0.3s ease;
+        }
+        .btn-gradient:hover {
+            background: linear-gradient(45deg, #2e603f, #1a432b);
+            transform: scale(1.02);
+            box-shadow: 0 4px 10px rgba(46, 96, 63, 0.3);
+        }
+        .text-gradient {
+            background: linear-gradient(45deg, #2e603f, #4a7c59);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+@endpush
+
+@section('content')
+
+    {{-- RINGKASAN SELLER (VERIFIKASI) --}}
+    <section>
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                <i class="fas fa-chart-line text-green-600"></i> Ringkasan Penjual
+            </h2>
+            
+            <a href="{{ route('platform.categories.index') }}" 
+               class="bg-white border border-green-600 text-green-600 hover:bg-green-50 font-semibold py-2 px-4 rounded-lg text-sm transition flex items-center gap-2 shadow-sm">
+                <i class="fas fa-tags"></i> Kelola Kategori
             </a>
-            <h1 class="text-2xl font-bold text-brand-green-dark">
-                EasyMart <span class="font-normal text-gray-500">Platform Dashboard</span>
-            </h1>
         </div>
 
-        <div class="flex items-center space-x-6">
-            <span class="text-gray-700">
-                {{ Auth::user()->name }} (Platform)
-            </span>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit"
-                    class="px-4 py-2 text-sm font-medium text-white rounded-full"
-                    style="background-color:#1a432b;">
-                    Logout
-                </button>
-            </form>
+            {{-- Pending --}}
+            <div class="bg-white rounded-xl shadow-sm p-6 flex flex-col justify-between card-hover border-l-4 border-yellow-400 relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-50">
+                    <i class="fas fa-clock text-6xl text-yellow-500"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-yellow-600 uppercase tracking-wider mb-1">MENUNGGU PERSETUJUAN</p>
+                    <p class="text-4xl font-bold text-gray-800">{{ $pendingCount }}</p>
+                </div>
+                <div class="mt-4 pt-4 border-t border-gray-100">
+                    <a href="{{ route('platform.sellers.index', ['status' => 'pending']) }}"
+                       class="text-xs font-semibold text-yellow-600 hover:text-yellow-700 flex items-center gap-1">
+                        Lihat detail <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            {{-- Active --}}
+            <div class="bg-white rounded-xl shadow-sm p-6 flex flex-col justify-between card-hover border-l-4 border-green-500 relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-50">
+                    <i class="fas fa-check-circle text-6xl text-green-500"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-green-600 uppercase tracking-wider mb-1">AKTIF</p>
+                    <p class="text-4xl font-bold text-gray-800">{{ $activeCount }}</p>
+                </div>
+                <div class="mt-4 pt-4 border-t border-gray-100">
+                    <a href="{{ route('platform.sellers.index', ['status' => 'active']) }}"
+                       class="text-xs font-semibold text-green-600 hover:text-green-700 flex items-center gap-1">
+                        Lihat detail <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            {{-- Rejected --}}
+            <div class="bg-white rounded-xl shadow-sm p-6 flex flex-col justify-between card-hover border-l-4 border-red-500 relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-50">
+                    <i class="fas fa-times-circle text-6xl text-red-500"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-red-600 uppercase tracking-wider mb-1">DITOLAK</p>
+                    <p class="text-4xl font-bold text-gray-800">{{ $rejectedCount }}</p>
+                </div>
+                <div class="mt-4 pt-4 border-t border-gray-100">
+                    <a href="{{ route('platform.sellers.index', ['status' => 'rejected']) }}"
+                       class="text-xs font-semibold text-red-600 hover:text-red-700 flex items-center gap-1">
+                        Lihat detail <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
         </div>
-    </header>
+    </section>
 
-    {{-- MAIN CONTENT --}}
-    <main class="px-10 py-8 space-y-10">
+    {{-- DASHBOARD GRAFIS --}}
+    <section class="mt-10">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+            <i class="fas fa-chart-bar text-green-600"></i> Statistik Visual
+        </h2>
 
-        {{-- RINGKASAN SELLER (VERIFIKASI) --}}
-        <section>
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-3xl font-bold" style="color:#2e603f;">
-                    Ringkasan Seller
-                </h2>
-                
-                <a href="{{ route('platform.categories.index') }}" 
-                class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-full shadow-lg transition transform hover:-translate-y-1 flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-                    </svg>
-                    Kelola Kategori
-                </a>
-            </div>
-
-            {{-- GRID 3 KOLOM --}}
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-                {{-- Pending --}}
-                <div class="bg-white rounded-2xl shadow p-6 flex flex-col justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500 mb-1 font-semibold uppercase">PENDING</p>
-                        <p class="text-3xl font-bold text-yellow-600">{{ $pendingCount }}</p>
-                    </div>
-                    <div class="mt-3">
-                        <a href="{{ route('platform.sellers.index', ['status' => 'pending']) }}"
-                        class="text-sm inline-block font-semibold" style="color:#2e603f;">
-                            Lihat daftar →
-                        </a>
-                    </div>
-                </div>
-
-                {{-- Active --}}
-                <div class="bg-white rounded-2xl shadow p-6 flex flex-col justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500 mb-1 font-semibold uppercase">ACTIVE</p>
-                        <p class="text-3xl font-bold text-green-700">{{ $activeCount }}</p>
-                    </div>
-                    <div class="mt-3">
-                        <a href="{{ route('platform.sellers.index', ['status' => 'active']) }}"
-                        class="text-sm inline-block font-semibold" style="color:#2e603f;">
-                            Lihat daftar →
-                        </a>
-                    </div>
-                </div>
-
-                {{-- Rejected --}}
-                <div class="bg-white rounded-2xl shadow p-6 flex flex-col justify-between">
-                    <div>
-                        <p class="text-sm text-gray-500 mb-1 font-semibold uppercase">REJECTED</p>
-                        <p class="text-3xl font-bold text-red-600">{{ $rejectedCount }}</p>
-                    </div>
-                    <div class="mt-3">
-                        <a href="{{ route('platform.sellers.index', ['status' => 'rejected']) }}"
-                        class="text-sm inline-block font-semibold" style="color:#2e603f;">
-                            Lihat daftar →
-                        </a>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-
-        {{-- ================= SRS-MartPlace-07: DASHBOARD GRAFIS ================= --}}
-        <section>
-            <h2 class="text-2xl font-bold mb-4" style="color:#2e603f;">
-                Dashboard Grafis (SRS-MartPlace-07)
-            </h2>
-
-            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                {{-- Grafik: Produk per Kategori --}}
-                <div class="bg-white rounded-2xl shadow p-6">
-                    <h3 class="text-base font-semibold text-gray-800 mb-2">
-                        Sebaran Jumlah Produk per Kategori
-                    </h3>
-                    <canvas id="chartProductsByCategory" class="w-full h-64"></canvas>
-                </div>
-
-                {{-- Grafik: Toko per Provinsi --}}
-                <div class="bg-white rounded-2xl shadow p-6">
-                    <h3 class="text-base font-semibold text-gray-800 mb-2">
-                        Sebaran Jumlah Toko per Provinsi
-                    </h3>
-                    <canvas id="chartStoresByProvince" class="w-full h-64"></canvas>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {{-- Grafik: Produk per Kategori --}}
+            <div class="bg-white rounded-xl shadow-sm p-5 card-hover border border-gray-100">
+                <h3 class="text-sm font-semibold text-gray-700 mb-4 border-b pb-2">
+                    Sebaran Produk per Kategori
+                </h3>
+                <div class="h-64">
+                    <canvas id="chartProductsByCategory"></canvas>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mt-6">
-                {{-- Grafik: Seller aktif vs tidak aktif --}}
-                <div class="bg-white rounded-2xl shadow p-6">
-                    <h3 class="text-base font-semibold text-gray-800 mb-2">
-                        Jumlah Seller Aktif dan Tidak Aktif
-                    </h3>
-                    <canvas id="chartSellerStatus" class="w-full h-64"></canvas>
-                </div>
-
-                {{-- Ringkasan komentar & rating --}}
-                <div class="bg-white rounded-2xl shadow p-6 flex flex-col justify-center">
-                    <h3 class="text-base font-semibold text-gray-800 mb-4">
-                        Pengunjung yang Memberi Komentar &amp; Rating
-                    </h3>
-                    <p class="text-sm text-gray-600">
-                        Total komentar &amp; rating yang masuk:
-                    </p>
-                    <p class="text-4xl font-bold mt-2" style="color:#2e603f;">
-                        {{ $totalReviews }}
-                    </p>
-                    <p class="text-sm text-gray-500 mt-1">
-                        Dari <span class="font-semibold">{{ $totalReviewVisitors }}</span> pengunjung unik.
-                    </p>
+            {{-- Grafik: Toko per Provinsi --}}
+            <div class="bg-white rounded-xl shadow-sm p-5 card-hover border border-gray-100">
+                <h3 class="text-sm font-semibold text-gray-700 mb-4 border-b pb-2">
+                    Sebaran Toko per Provinsi
+                </h3>
+                <div class="h-64">
+                    <canvas id="chartStoresByProvince"></canvas>
                 </div>
             </div>
-        </section>
 
-        {{-- =========== SRS-MartPlace-09,10,11: LAPORAN PDF =========== --}}
-        <section>
-            <h2 class="text-2xl font-bold mb-4" style="color:#2e603f;">
-                Laporan Bagian Platform (PDF)
-            </h2>
+            {{-- Grafik: Seller aktif vs tidak aktif --}}
+            <div class="bg-white rounded-xl shadow-sm p-5 card-hover border border-gray-100">
+                <h3 class="text-sm font-semibold text-gray-700 mb-4 border-b pb-2">
+                    Rasio Status Seller
+                </h3>
+                <div class="h-64 flex justify-center">
+                    <canvas id="chartSellerStatus"></canvas>
+                </div>
+            </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {{-- Ringkasan komentar & rating --}}
+            <div class="bg-white rounded-xl shadow-sm p-6 flex flex-col justify-center items-center text-center card-hover border border-indigo-100 bg-gradient-to-br from-indigo-50 to-white">
+                <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 mb-3">
+                    <i class="fas fa-star text-xl"></i>
+                </div>
+                <h3 class="text-gray-600 font-medium mb-1">Total Ulasan Masuk</h3>
+                <p class="text-5xl font-bold text-indigo-600 mb-2 tracking-tight">
+                    {{ $totalReviews }}
+                </p>
+                <p class="text-xs text-gray-500">
+                    Dari <span class="font-bold text-indigo-700">{{ $totalReviewVisitors }}</span> pengunjung
+                </p>
+            </div>
+        </div>
+    </section>
 
-                {{-- SRS-MartPlace-09 --}}
-                <div class="bg-white rounded-2xl shadow p-6 flex flex-col justify-between">
+    {{-- PUSAT LAPORAN --}}
+    <section class="mt-10">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+            <i class="fas fa-file-pdf text-green-600"></i> Pusat Laporan (PDF)
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+            {{-- Report Card 1 --}}
+            <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-200 hover:border-green-500 transition-colors group">
+                <div class="flex items-start gap-4">
+                    <div class="bg-green-100 p-3 rounded-lg text-green-600 group-hover:bg-green-600 group-hover:text-white transition">
+                        <i class="fas fa-user-check text-xl"></i>
+                    </div>
                     <div>
-                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                            SRS-MartPlace-09
+                        <h3 class="font-semibold text-gray-800 mb-1">Status Penjual</h3>
+                        <p class="text-xs text-gray-500 mb-4 leading-relaxed">
+                            Laporan lengkap akun penjual berdasarkan status aktif/non-aktif.
                         </p>
-                        <h3 class="mt-2 font-semibold text-gray-800">
-                            Laporan Daftar Akun Penjual Berdasarkan Status
-                        </h3>
-                        <p class="mt-2 text-sm text-gray-600">
-                            Berisi nama user, PIC, nama toko, dan status,
-                            diurutkan berdasarkan status (aktif lalu tidak aktif).
-                        </p>
-                    </div>
-                    <div class="mt-4">
                         <a href="{{ route('platform.reports.sellers-status') }}"
-                        class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold text-white"
-                        style="background-color:#1a432b;">
-                            Unduh Laporan PDF
+                           class="text-xs font-bold text-green-700 hover:underline flex items-center gap-1">
+                            Lihat Laporan <i class="fa-solid fa-eye"></i>
                         </a>
                     </div>
                 </div>
-
-                {{-- SRS-MartPlace-10 --}}
-                <div class="bg-white rounded-2xl shadow p-6 flex flex-col justify-between">
-                    <div>
-                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                            SRS-MartPlace-10
-                        </p>
-                        <h3 class="mt-2 font-semibold text-gray-800">
-                            Laporan Daftar Toko Berdasarkan Lokasi Provinsi
-                        </h3>
-                        <p class="mt-2 text-sm text-gray-600">
-                            Berisi nama toko, PIC, dan provinsi, diurutkan berdasarkan nama provinsi.
-                        </p>
-                    </div>
-                    <div class="mt-4">
-                        <a href="{{ route('platform.reports.stores-by-province') }}"
-                        class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold text-white"
-                        style="background-color:#1a432b;">
-                            Unduh Laporan PDF
-                        </a>
-                    </div>
-                </div>
-
-                {{-- SRS-MartPlace-11 --}}
-                <div class="bg-white rounded-2xl shadow p-6 flex flex-col justify-between">
-                    <div>
-                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                            SRS-MartPlace-11
-                        </p>
-                        <h3 class="mt-2 font-semibold text-gray-800">
-                            Laporan Daftar Produk Berdasarkan Rating
-                        </h3>
-                        <p class="mt-2 text-sm text-gray-600">
-                            Berisi daftar produk yang diurutkan berdasarkan rating,
-                            lengkap dengan kategori, harga, nama toko, dan provinsi pemberi rating.
-                        </p>
-                    </div>
-                    <div class="mt-4">
-                        <a href="{{ route('platform.reports.products-by-rating') }}"
-                        class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold text-white"
-                        style="background-color:#1a432b;">
-                            Unduh Laporan PDF
-                        </a>
-                    </div>
-                </div>
-
             </div>
-        </section>
 
-    </main>
+            {{-- Report Card 2 --}}
+            <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-200 hover:border-blue-500 transition-colors group">
+                <div class="flex items-start gap-4">
+                    <div class="bg-blue-100 p-3 rounded-lg text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition">
+                        <i class="fas fa-map-marked-alt text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-800 mb-1">Lokasi Toko</h3>
+                        <p class="text-xs text-gray-500 mb-4 leading-relaxed">
+                            Rekapitulasi sebaran lokasi toko berdasarkan provinsi.
+                        </p>
+                        <a href="{{ route('platform.reports.stores-by-province') }}"
+                           class="text-xs font-bold text-blue-700 hover:underline flex items-center gap-1">
+                            Lihat Laporan <i class="fa-solid fa-eye"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
 
-    {{-- ================= SCRIPT CHART.JS ================= --}}
+            {{-- Report Card 3 --}}
+            <div class="bg-white rounded-xl shadow-sm p-5 border border-gray-200 hover:border-purple-500 transition-colors group">
+                <div class="flex items-start gap-4">
+                    <div class="bg-purple-100 p-3 rounded-lg text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition">
+                        <i class="fas fa-star text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-gray-800 mb-1">Rating Produk</h3>
+                        <p class="text-xs text-gray-500 mb-4 leading-relaxed">
+                            Daftar produk dengan performa rating tertinggi ke terendah.
+                        </p>
+                        <a href="{{ route('platform.reports.products-by-rating') }}"
+                           class="text-xs font-bold text-purple-700 hover:underline flex items-center gap-1">
+                            Lihat Laporan <i class="fa-solid fa-eye"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+@endsection
+
+@push('scripts')
+    {{-- Chart.js --}}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script>
         // Data dari controller
         const productCategoryLabels = {!! json_encode($productByCategory->pluck('category')) !!};
@@ -252,53 +250,76 @@
         const sellerStatusLabels = ['Aktif', 'Tidak Aktif'];
         const sellerStatusData   = [{{ $sellerActiveCount }}, {{ $sellerInactiveCount }}];
 
-        // Chart: Produk per kategori
+        const commonOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { borderDash: [2, 4] },
+                    ticks: {
+                        stepSize: 1,
+                        precision: 0
+                    }
+                },
+                x: { grid: { display: false } }
+            }
+        };
+
         new Chart(document.getElementById('chartProductsByCategory'), {
             type: 'bar',
             data: {
                 labels: productCategoryLabels,
                 datasets: [{
                     label: 'Jumlah Produk',
-                    data: productCategoryData
+                    data: productCategoryData,
+                    backgroundColor: '#4a7c59',
+                    borderRadius: 4,
+                    barThickness: 30
                 }]
             },
-            options: {
-                responsive: true,
-                scales: { y: { beginAtZero: true } }
-            }
+            options: commonOptions
         });
 
-        // Chart: Toko per provinsi
         new Chart(document.getElementById('chartStoresByProvince'), {
             type: 'bar',
             data: {
                 labels: storeProvinceLabels,
                 datasets: [{
                     label: 'Jumlah Toko',
-                    data: storeProvinceData
+                    data: storeProvinceData,
+                    backgroundColor: '#3b82f6',
+                    borderRadius: 4,
+                    barThickness: 30
                 }]
             },
-            options: {
-                responsive: true,
-                scales: { y: { beginAtZero: true } }
-            }
+            options: commonOptions
         });
 
-        // Chart: Seller aktif vs tidak aktif
         new Chart(document.getElementById('chartSellerStatus'), {
             type: 'doughnut',
             data: {
-                labels: sellerStatusLabels,
+                labels: [
+                    'Aktif ({{ $sellerActiveCount }})',
+                    'Tidak Aktif ({{ $sellerInactiveCount }})'
+                ],
                 datasets: [{
-                    data: sellerStatusData
+                    data: sellerStatusData,
+                    backgroundColor: ['#22c55e', '#ef4444'],
+                    borderWidth: 0
                 }]
             },
             options: {
                 responsive: true,
-                plugins: { legend: { position: 'bottom' } }
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }
+                },
+                cutout: '70%'
             }
         });
     </script>
-
-</body>
-</html>
+@endpush
