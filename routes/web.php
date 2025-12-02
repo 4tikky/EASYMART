@@ -4,13 +4,16 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Platform\SellerApprovalController;
+use App\Http\Controllers\Platform\PlatformReportController;
 use App\Mail\SellerApprovedMail;
 use App\Mail\SellerRejectedMail;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\SellerController;
 use App\Http\Controllers\ProductController;
 use App\Models\Product;
 use App\Http\Controllers\LocationController;
+
 
 Route::get('/test-email', function () {
     $user = User::where('role', 'penjual')->first();
@@ -38,29 +41,26 @@ Route::middleware(['auth', 'platform'])
         Route::post('/sellers/{seller}/reject', [SellerApprovalController::class, 'reject'])
             ->name('sellers.reject');
 
-        // Laporan PDF: Akun penjual berdasarkan status
-        Route::get('/reports/sellers-status', function () {
-            return back()->with(
-                'status',
-                'Fitur laporan PDF SRS-MartPlace-09 (akun penjual berdasarkan status) belum diimplementasikan.'
-            );
-        })->name('reports.sellers-status');
+        // SRS-MartPlace-09: laporan seller per status
+        Route::get('/reports/sellers-status', [PlatformReportController::class, 'sellersStatus'])
+            ->name('reports.sellers-status');
+
+        Route::get('/reports/sellers-status/pdf', [PlatformReportController::class, 'sellersStatusPdf'])
+            ->name('reports.sellers-status.pdf');
 
         // SRS-MartPlace-10: laporan toko per provinsi
-        Route::get('/reports/stores-by-province', function () {
-            return back()->with(
-                'status',
-                'Fitur laporan PDF SRS-MartPlace-10 (toko per provinsi) belum diimplementasikan.'
-            );
-        })->name('reports.stores-by-province');
+        Route::get('/reports/stores-by-province', [PlatformReportController::class, 'storesByProvince'])
+            ->name('reports.stores-by-province');
+
+        Route::get('/reports/stores-by-province/pdf', [PlatformReportController::class, 'storesByProvincePdf'])
+            ->name('reports.stores-by-province.pdf');
 
         // SRS-MartPlace-11: laporan produk berdasarkan rating
-        Route::get('/reports/products-by-rating', function () {
-            return back()->with(
-                'status',
-                'Fitur laporan PDF SRS-MartPlace-11 (produk berdasarkan rating) belum diimplementasikan.'
-            );
-        })->name('reports.products-by-rating');
+        Route::get('/reports/products-by-rating', [PlatformReportController::class, 'productsByRating'])
+            ->name('reports.products-by-rating');
+
+        Route::get('/reports/products-by-rating/pdf', [PlatformReportController::class, 'productsByRatingPdf'])
+            ->name('reports.products-by-rating.pdf');
     });
 
 // Category Management Routes (Platform Admin)

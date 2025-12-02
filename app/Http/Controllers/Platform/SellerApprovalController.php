@@ -21,7 +21,7 @@ class SellerApprovalController extends Controller
      */
     public function dashboard(): View
     {
-        // ---- Ringkasan verifikasi seller (INI bagian verifikasimu) ----
+        // ---- Ringkasan verifikasi seller ----
         $pendingCount  = User::where('role', User::ROLE_PENJUAL)
             ->where('status_verifikasi', User::STATUS_PENDING)
             ->count();
@@ -68,7 +68,21 @@ class SellerApprovalController extends Controller
 
         // 4) Jumlah pengunjung yang memberi komentar & rating
         $totalReviews        = Review::count();
-        $totalReviewVisitors = Review::distinct('user_id')->count('user_id');
+        $reviewers = Review::select('user_id', 'guest_email')->get();
+
+        $totalReviewVisitors = $reviewers
+            ->map(function ($r) {
+                // Kalau user login, kunci uniknya pakai user_id
+                if (!is_null($r->user_id)) {
+                    return 'user-' . $r->user_id;
+                }
+
+                // Kalau tamu, pakai email (boleh diganti guest_phone kalau mau)
+                return 'guest-' . strtolower(trim($r->guest_email ?? ''));
+            })
+            ->filter()   // buang yang kosong (jaga-jaga kalau guest_email null)
+            ->unique()
+            ->count();
 
         return view('platform.dashboard', compact(
             'pendingCount',
