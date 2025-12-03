@@ -4,13 +4,16 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Platform\SellerApprovalController;
+use App\Http\Controllers\Platform\PlatformReportController;
 use App\Mail\SellerApprovedMail;
 use App\Mail\SellerRejectedMail;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\SellerController;
 use App\Http\Controllers\ProductController;
 use App\Models\Product;
 use App\Http\Controllers\LocationController;
+
 
 Route::get('/test-email', function () {
     $user = User::where('role', 'penjual')->first();
@@ -37,7 +40,44 @@ Route::middleware(['auth', 'platform'])
         // Reject seller
         Route::post('/sellers/{seller}/reject', [SellerApprovalController::class, 'reject'])
             ->name('sellers.reject');
+
+        // SRS-MartPlace-09: laporan seller per status
+        Route::get('/reports/sellers-status', [PlatformReportController::class, 'sellersStatus'])
+            ->name('reports.sellers-status');
+
+        Route::get('/reports/sellers-status/pdf', [PlatformReportController::class, 'sellersStatusPdf'])
+            ->name('reports.sellers-status.pdf');
+
+        // SRS-MartPlace-10: laporan toko per provinsi
+        Route::get('/reports/stores-by-province', [PlatformReportController::class, 'storesByProvince'])
+            ->name('reports.stores-by-province');
+
+        Route::get('/reports/stores-by-province/pdf', [PlatformReportController::class, 'storesByProvincePdf'])
+            ->name('reports.stores-by-province.pdf');
+
+        // SRS-MartPlace-11: laporan produk berdasarkan rating
+        Route::get('/reports/products-by-rating', [PlatformReportController::class, 'productsByRating'])
+            ->name('reports.products-by-rating');
+
+        Route::get('/reports/products-by-rating/pdf', [PlatformReportController::class, 'productsByRatingPdf'])
+            ->name('reports.products-by-rating.pdf');
     });
+
+// Category Management Routes (Platform Admin)
+use App\Http\Controllers\CategoryController;
+Route::middleware(['auth', 'platform'])
+    ->prefix('platform')
+    ->name('platform.')
+    ->group(function () {
+        Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
+        Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
+        Route::put('/categories/{category}', [CategoryController::class, 'update'])->name('categories.update');
+        Route::delete('/categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy');
+        Route::post('/categories/{category}/toggle', [CategoryController::class, 'toggleStatus'])->name('categories.toggle');
+    });
+
+// API endpoint untuk get active categories (untuk seller)
+Route::get('/api/categories', [CategoryController::class, 'getActiveCategories'])->name('api.categories');
 
 Route::get('/register/waiting', function () {
     return view('auth.seller-waiting');
@@ -64,7 +104,20 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    $user = Auth::user();
+    
+    // Redirect platform admin ke platform dashboard
+    if ($user->role === 'platform') {
+        return redirect()->route('platform.dashboard');
+    }
+    
+    // Redirect seller ke seller dashboard
+    if ($user->seller) {
+        return redirect()->route('seller.dashboard');
+    }
+    
+    // User biasa (pembeli) redirect ke home
+    return redirect('/');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // ====== ROUTE AJAX WILAYAH (INI YANG PENTING) ======

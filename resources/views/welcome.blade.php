@@ -56,23 +56,13 @@
                 <div class="hidden md:flex items-center space-x-8">
                     <a href="#" class="text-gray-600 hover:text-brand-green transition font-medium">Beranda</a>
                     <a href="#produk" class="text-gray-600 hover:text-brand-green transition font-medium">Produk</a>
-                    
-                    @auth
-                        @if(Auth::user()->seller)
-                            {{-- <a href="{{ route('seller.dashboard') }}" class="text-brand-green font-bold hover:underline">Toko Saya</a> --}}
-                        @else
-                            <a href="{{ route('seller.register') }}" class="text-brand-green hover:text-brand-dark font-medium transition">Buka Toko Gratis</a>
-                        @endif
-                    @else
-                        <a href="{{ route('login') }}" class="text-gray-600 hover:text-brand-green transition font-medium">Toko Saya</a>
-                    @endauth
                 </div>
 
                 <div class="flex items-center space-x-4">
                     @auth
                         <div class="flex items-center space-x-3">
                             <span class="text-sm text-gray-700 hidden md:inline">Hi, {{ Auth::user()->name }}</span>
-                            <a href="{{ route('seller.dashboard') }}" class="px-4 py-2 bg-brand-green text-white rounded-full hover:bg-green-800 transition text-sm shadow-md">
+                            <a href="{{ route('dashboard') }}" class="px-4 py-2 bg-brand-green text-white rounded-full hover:bg-green-800 transition text-sm shadow-md">
                                 Dashboard
                             </a>
                             <form action="{{ route('logout') }}" method="POST" class="inline">
@@ -104,15 +94,6 @@
             <div class="px-4 py-3 space-y-3">
                 <a href="#" class="block text-gray-700 hover:text-brand-green">Beranda</a>
                 <a href="#produk" class="block text-gray-700 hover:text-brand-green">Produk</a>
-                @auth
-                    @if(Auth::user()->seller)
-                        {{-- <a href="{{ route('seller.dashboard') }}" class="block text-brand-green font-bold">Toko Saya</a> --}}
-                    @else
-                        <a href="{{ route('seller.register') }}" class="block text-brand-green">Buka Toko Gratis</a>
-                    @endif
-                @else
-                    <a href="{{ route('login') }}" class="block text-gray-700 hover:text-brand-green">Toko Saya</a>
-                @endauth
             </div>
         </div>
     </nav>
