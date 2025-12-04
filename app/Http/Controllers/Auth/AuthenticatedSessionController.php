@@ -33,8 +33,10 @@ class AuthenticatedSessionController extends Controller
         // 1. CEK STATUS PENJUAL (Tetap kita cek verifikasinya)
         if ($user->role === 'penjual') {
             // Pastikan relasi seller ada sebelum dicek
-            if ($user->seller && $user->status_verifikasi !== User::STATUS_ACTIVE) {
-                Auth::logout();
+            if ($user->status_verifikasi !== User::STATUS_ACTIVE) {
+                Auth::guard('web')->logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
 
                 return back()->withErrors([
                     'email' => 'Akun penjual Anda belum disetujui admin.',

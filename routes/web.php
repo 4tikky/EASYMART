@@ -39,6 +39,10 @@ Route::get('/locations/regencies/{province}', [LocationController::class, 'getRe
 Route::get('/locations/districts/{city}', [LocationController::class, 'getDistricts'])->name('locations.districts');
 Route::get('/locations/villages/{district}', [LocationController::class, 'getVillages'])->name('locations.villages');
 
+Route::get('/register/waiting', function () {
+    return view('auth.seller-waiting');
+})->name('seller.register.waiting');
+
 // ==========================================
 // AUTHENTICATED ROUTES
 // ==========================================
@@ -75,9 +79,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/toko-saya', [SellerController::class, 'checkStore'])->name('seller.check');
     Route::get('/seller/register', [SellerController::class, 'create'])->name('seller.register');
     Route::post('/seller/register', [SellerController::class, 'store'])->name('seller.store');
-    Route::get('/register/waiting', function () {
-        return view('auth.seller-waiting');
-    })->name('seller.register.waiting');
     
     Route::get('/seller/dashboard', [SellerController::class, 'dashboard'])->name('seller.dashboard');
     
