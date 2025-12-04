@@ -44,12 +44,15 @@
                     <form action="{{ route('products.search') }}" method="GET" class="relative">
                         <input type="text" 
                                name="q" 
-                               placeholder="Cari produk, toko..." 
+                               placeholder="Cari produk, nama toko, kategori, atau lokasi..." 
                                class="w-full pl-11 pr-4 py-2.5 border border-gray-300 rounded-full focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
                                value="{{ request('q') }}">
                         <svg class="absolute left-4 top-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
+                        <button type="submit" class="absolute right-2 top-1.5 px-4 py-1.5 bg-green-600 text-white rounded-full hover:bg-green-700 transition text-sm font-medium">
+                            Cari
+                        </button>
                     </form>
                 </div>
 
@@ -92,6 +95,16 @@
 
         <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200 bg-white">
             <div class="px-4 py-3 space-y-3">
+                <form action="{{ route('products.search') }}" method="GET" class="relative mb-3">
+                    <input type="text" 
+                           name="q" 
+                           placeholder="Cari produk, toko, lokasi..." 
+                           class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                           value="{{ request('q') }}">
+                    <svg class="absolute left-3 top-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </form>
                 <a href="#" class="block text-gray-700 hover:text-brand-green">Beranda</a>
                 <a href="#produk" class="block text-gray-700 hover:text-brand-green">Produk</a>
             </div>
@@ -162,7 +175,14 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
                 <h2 class="text-3xl font-bold text-brand-dark mb-4">Katalog Terbaru</h2>
-                <p class="text-gray-600">Produk pilihan dari penjual terpercaya</p>
+                <p class="text-gray-600 mb-4">Produk pilihan dari penjual terpercaya</p>
+                <div class="flex flex-wrap justify-center gap-2 text-xs text-gray-500 max-w-2xl mx-auto">
+                    <span class="px-3 py-1 bg-gray-100 rounded-full">💡 Cari berdasarkan:</span>
+                    <span class="px-2 py-1 bg-green-50 text-green-700 rounded-full font-medium">Nama Produk</span>
+                    <span class="px-2 py-1 bg-blue-50 text-blue-700 rounded-full font-medium">Nama Toko</span>
+                    <span class="px-2 py-1 bg-purple-50 text-purple-700 rounded-full font-medium">Kategori</span>
+                    <span class="px-2 py-1 bg-orange-50 text-orange-700 rounded-full font-medium">Lokasi</span>
+                </div>
             </div>
 
             <!-- Filter Kategori (Fungsional) -->

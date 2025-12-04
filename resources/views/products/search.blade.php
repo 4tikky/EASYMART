@@ -35,12 +35,15 @@
                     <form action="{{ route('products.search') }}" method="GET" class="relative">
                         <input type="text" 
                                name="q" 
-                               placeholder="Cari produk, toko..." 
+                               placeholder="Cari produk, nama toko, kategori, atau lokasi..." 
                                class="w-full pl-11 pr-4 py-2.5 border border-gray-300 rounded-full focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
                                value="{{ $query }}">
                         <svg class="absolute left-4 top-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
+                        <button type="submit" class="absolute right-2 top-1.5 px-4 py-1.5 bg-green-600 text-white rounded-full hover:bg-green-700 transition text-sm font-medium">
+                            Cari
+                        </button>
                     </form>
                 </div>
 
@@ -101,7 +104,7 @@
                 <form action="{{ route('products.search') }}" method="GET" class="relative">
                     <input type="text" 
                            name="q" 
-                           placeholder="Cari produk, toko..." 
+                           placeholder="Cari produk, toko, lokasi..." 
                            class="w-full pl-11 pr-4 py-2.5 border border-gray-300 rounded-full focus:ring-2 focus:ring-green-500 focus:border-transparent"
                            value="{{ $query }}">
                     <svg class="absolute left-4 top-3 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -143,61 +146,30 @@
                 <h2 class="text-3xl font-bold text-brand-dark mb-2">
                     Hasil untuk "{{ $query }}"
                 </h2>
-                <p class="text-gray-600">
-                    Ditemukan {{ $total }} produk
+                <p class="text-gray-600 mb-3">
+                    Ditemukan <span class="font-semibold text-brand-green">{{ $total }}</span> produk
                 </p>
+                <div class="flex flex-wrap gap-2 text-sm">
+                    <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full font-medium">
+                        🔍 Nama Produk
+                    </span>
+                    <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full font-medium">
+                        🏪 Nama Toko
+                    </span>
+                    <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full font-medium">
+                        📁 Kategori
+                    </span>
+                    <span class="px-3 py-1 bg-orange-100 text-orange-700 rounded-full font-medium">
+                        📍 Lokasi Toko
+                    </span>
+                </div>
             </div>
 
             <!-- Products Grid -->
             @if($products->count() > 0)
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     @foreach($products as $product)
-                        <div class="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-100 group">
-                            <!-- Product Image -->
-                            <a href="{{ route('products.show', $product) }}" class="block relative overflow-hidden">
-                                @if($product->image)
-                                    <img src="{{ asset('storage/' . $product->image) }}" 
-                                         alt="{{ $product->name }}" 
-                                         class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300">
-                                @else
-                                    <div class="w-full h-48 bg-gray-100 flex items-center justify-center">
-                                        <svg class="w-16 h-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                        </svg>
-                                    </div>
-                                @endif
-                            </a>
-
-                            <!-- Product Info -->
-                            <div class="p-4">
-                                <a href="{{ route('products.show', $product) }}" 
-                                   class="block hover:text-brand-green transition-colors">
-                                    <h3 class="text-base font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[3rem]">
-                                        {{ $product->name }}
-                                    </h3>
-                                </a>
-                                
-                                <!-- Price -->
-                                <div class="mb-3">
-                                    <span class="text-xl font-bold text-brand-green">
-                                        Rp {{ number_format($product->price, 0, ',', '.') }}
-                                    </span>
-                                </div>
-
-                                <!-- Seller & Stock Info -->
-                                <div class="flex items-center justify-between text-sm text-gray-600 border-t pt-3">
-                                    <div class="flex items-center">
-                                        <svg class="w-4 h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                                        </svg>
-                                        <span class="truncate">{{ $product->seller->storeName }}</span>
-                                    </div>
-                                    <span class="text-gray-500 text-xs whitespace-nowrap ml-2">
-                                        Stok: {{ $product->stock }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
+                        <x-product-card :product="$product" />
                     @endforeach
                 </div>
 

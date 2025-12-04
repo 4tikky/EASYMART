@@ -14,6 +14,7 @@ class Review extends Model
         'user_id',
         'rating',
         'comment',
+        'provinsi',
         'guest_name',
         'guest_email',
         'guest_phone',

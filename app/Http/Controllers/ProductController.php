@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 class ProductController extends Controller
 {
     /**
-     * Search products by name, description, category, or seller store name
+     * Search products by name, description, category, seller store name, or location
      */
     public function search(Request $request)
     {
@@ -21,16 +21,19 @@ class ProductController extends Controller
             return redirect('/');
         }
         
-        // Search produk berdasarkan nama, deskripsi, kategori, atau nama toko
+        // Search produk berdasarkan nama, deskripsi, kategori, nama toko, atau lokasi
         $products = Product::with('seller')
+            ->withAvg('reviews', 'rating')
             ->where(function($q) use ($query) {
                 // Search di nama produk, deskripsi, dan kategori
                 $q->where('name', 'LIKE', "%{$query}%")
                   ->orWhere('description', 'LIKE', "%{$query}%")
                   ->orWhere('category', 'LIKE', "%{$query}%")
-                  // Search di nama toko (storeName)
+                  // Search di nama toko, kota/kabupaten, atau provinsi
                   ->orWhereHas('seller', function($sellerQuery) use ($query) {
-                      $sellerQuery->where('storeName', 'LIKE', "%{$query}%");
+                      $sellerQuery->where('storeName', 'LIKE', "%{$query}%")
+                                  ->orWhere('picCity', 'LIKE', "%{$query}%")
+                                  ->orWhere('picProvince', 'LIKE', "%{$query}%");
                   });
             })
             ->latest()
@@ -48,7 +51,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        $product->load(['seller', 'reviews.user']);
+        $product->load(['seller', 'reviews.user', 'images']);
         
         // Get related products from same seller
         $relatedProducts = Product::where('seller_id', $product->seller_id)
@@ -81,6 +84,7 @@ class ProductController extends Controller
         $rules = [
             'rating' => 'required|integer|min:1|max:5',
             'comment' => 'nullable|string|max:1000',
+            'provinsi' => 'required|string|max:100',
         ];
 
         // Jika user belum login, wajib isi data guest
@@ -103,6 +107,7 @@ class ProductController extends Controller
                 $existingReview->update([
                     'rating' => $validated['rating'],
                     'comment' => $validated['comment'] ?? null,
+                    'provinsi' => $validated['provinsi'],
                 ]);
                 return redirect()->back()->with('success', 'Review berhasil diperbarui!');
             } else {
@@ -112,6 +117,7 @@ class ProductController extends Controller
                     'user_id' => Auth::id(),
                     'rating' => $validated['rating'],
                     'comment' => $validated['comment'] ?? null,
+                    'provinsi' => $validated['provinsi'],
                 ]);
                 return redirect()->back()->with('success', 'Review berhasil ditambahkan!');
             }
@@ -131,6 +137,7 @@ class ProductController extends Controller
                 'user_id' => null,
                 'rating' => $validated['rating'],
                 'comment' => $validated['comment'] ?? null,
+                'provinsi' => $validated['provinsi'],
                 'guest_name' => $validated['guest_name'],
                 'guest_email' => $validated['guest_email'],
                 'guest_phone' => $validated['guest_phone'],

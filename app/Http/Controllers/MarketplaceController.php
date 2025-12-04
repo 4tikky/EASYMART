@@ -11,6 +11,7 @@ class MarketplaceController extends Controller
     public function index()
     {
         $products = Product::with(['seller'])
+            ->withAvg('reviews', 'rating')
             ->orderByDesc('created_at')
             ->paginate(12);
 
@@ -31,6 +32,7 @@ class MarketplaceController extends Controller
         }
 
         $products = Product::with(['seller', 'category'])
+            ->withAvg('reviews', 'rating')
             ->where(function ($query) use ($keyword) {
                 // 1. Nama produk
                 $query->where('name', 'like', "%{$keyword}%")

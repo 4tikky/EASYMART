@@ -25,6 +25,12 @@ class Product extends Model
         return $this->belongsTo(Seller::class); // Pastikan kamu punya model Seller
     }
 
+    // Relasi: Produk memiliki banyak Gambar
+    public function images()
+    {
+        return $this->hasMany(ProductImage::class)->orderBy('order');
+    }
+
     // Relasi: Produk memiliki banyak Review
     public function reviews()
     {
