@@ -65,7 +65,7 @@
                     @auth
                         <div class="flex items-center space-x-3">
                             <span class="text-sm text-gray-700 hidden md:inline">Hi, {{ Auth::user()->name }}</span>
-                            <a href="{{ route('dashboard') }}" class="px-4 py-2 bg-brand-green text-white rounded-full hover:bg-green-800 transition text-sm shadow-md">
+                            <a href="{{ route('dashboard') }}" class="px-5 py-2.5 bg-green-600 text-white rounded-full hover:bg-green-700 transition text-sm font-semibold shadow-lg hover:shadow-xl">
                                 Dashboard
                             </a>
                             <form action="{{ route('logout') }}" method="POST" class="inline">
@@ -76,8 +76,8 @@
                             </form>
                         </div>
                     @else
-                        <a href="{{ route('register') }}" class="px-4 py-2 text-brand-green font-medium hover:text-brand-dark transition">Daftar</a>
-                        <a href="{{ route('login') }}" class="px-6 py-2 bg-brand-green text-white rounded-full hover:bg-green-800 transition shadow-md">
+                        <a href="{{ route('register') }}" class="px-5 py-2.5 bg-white text-green-600 font-semibold hover:bg-green-50 transition border-2 border-green-600 rounded-full shadow-md">Daftar</a>
+                        <a href="{{ route('login') }}" class="px-6 py-2.5 bg-green-600 text-white rounded-full hover:bg-green-700 transition font-semibold shadow-lg hover:shadow-xl">
                             Masuk
                         </a>
                     @endauth
@@ -188,23 +188,23 @@
             <!-- Filter Kategori (Fungsional) -->
             <div class="flex flex-wrap justify-center gap-2 mb-10">
                 <a href="/?category=all#produk" 
-                   class="px-6 py-2 rounded-full font-medium shadow-md transition {{ $selectedCategory === 'all' ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-green-50' }}">
+                   class="px-6 py-2 rounded-full font-semibold shadow-md transition {{ $selectedCategory === 'all' ? 'bg-green-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-green-50' }}">
                     Semua
                 </a>
                 <a href="/?category=Pakaian Wanita#produk" 
-                   class="px-6 py-2 rounded-full font-medium shadow-md transition {{ $selectedCategory === 'Pakaian Wanita' ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-green-50' }}">
+                   class="px-6 py-2 rounded-full font-semibold shadow-md transition {{ $selectedCategory === 'Pakaian Wanita' ? 'bg-green-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-green-50' }}">
                     Pakaian Wanita
                 </a>
                 <a href="/?category=Pakaian Pria#produk" 
-                   class="px-6 py-2 rounded-full font-medium shadow-md transition {{ $selectedCategory === 'Pakaian Pria' ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-green-50' }}">
+                   class="px-6 py-2 rounded-full font-semibold shadow-md transition {{ $selectedCategory === 'Pakaian Pria' ? 'bg-green-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-green-50' }}">
                     Pakaian Pria
                 </a>
                 <a href="/?category=Aksesoris#produk" 
-                   class="px-6 py-2 rounded-full font-medium shadow-md transition {{ $selectedCategory === 'Aksesoris' ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-green-50' }}">
+                   class="px-6 py-2 rounded-full font-semibold shadow-md transition {{ $selectedCategory === 'Aksesoris' ? 'bg-green-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-green-50' }}">
                     Aksesoris
                 </a>
                 <a href="/?category=Rajutan#produk" 
-                   class="px-6 py-2 rounded-full font-medium shadow-md transition {{ $selectedCategory === 'Rajutan' ? 'bg-brand-green text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-green-50' }}">
+                   class="px-6 py-2 rounded-full font-semibold shadow-md transition {{ $selectedCategory === 'Rajutan' ? 'bg-green-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-green-50' }}">
                     Rajutan
                 </a>
             </div>
@@ -223,12 +223,12 @@
                         </p>
                         @auth
                             @if(!Auth::user()->seller)
-                                <a href="{{ route('seller.register') }}" class="inline-block px-6 py-3 bg-brand-green text-white rounded-full hover:bg-green-800 transition font-medium">
+                                <a href="{{ route('seller.register') }}" class="inline-block px-6 py-3 bg-green-600 text-white rounded-full hover:bg-green-700 transition font-semibold shadow-lg">
                                     Mulai Berjualan
                                 </a>
                             @endif
                         @else
-                            <a href="{{ route('register') }}" class="inline-block px-6 py-3 bg-brand-green text-white rounded-full hover:bg-green-800 transition font-medium">
+                            <a href="{{ route('register') }}" class="inline-block px-6 py-3 bg-green-600 text-white rounded-full hover:bg-green-700 transition font-semibold shadow-lg">
                                 Daftar Sekarang
                             </a>
                         @endauth

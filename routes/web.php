@@ -55,12 +55,12 @@ Route::middleware('auth')->group(function () {
         
         // Redirect platform admin ke platform dashboard
         if ($user->role === 'platform') {
-            return redirect()->route('platform.dashboard');
+            return redirect('/platform/dashboard');
         }
         
         // Redirect seller ke seller dashboard
         if ($user->seller) {
-            return redirect()->route('seller.dashboard');
+            return redirect('/seller/dashboard');
         }
         
         // User biasa (pembeli) redirect ke home

@@ -122,13 +122,16 @@ class SellerController extends Controller
 
             // 2. Cek apakah seller ada & statusnya active
             if (!$seller) {
-                Log::info('Redirecting to seller.check - No seller data');
-                return redirect()->route('seller.check')->with('error', 'Data toko tidak ditemukan'); 
+                Log::info('Redirecting to home - No seller data');
+                return redirect('/')->with('error', 'Data toko tidak ditemukan. Silakan daftar terlebih dahulu.'); 
             }
             
             if ($seller->status !== 'active') {
-                Log::info('Redirecting to seller.check - Status is: ' . $seller->status);
-                return redirect()->route('seller.check')->with('error', 'Toko Anda belum diaktifkan'); 
+                Log::info('Showing waiting page - Status is: ' . $seller->status);
+                if ($seller->status === 'pending') {
+                    return view('auth.seller-waiting');
+                }
+                return redirect('/')->with('error', 'Toko Anda belum diaktifkan atau ditolak.'); 
             }
             
             Log::info('Seller validation passed, loading dashboard...');

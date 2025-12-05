@@ -6,6 +6,7 @@
     <title>{{ $product->name }} - EasyMart</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body { 
             background-color: #ffffff; 
@@ -78,10 +79,10 @@
                 <div class="hidden md:flex items-center space-x-3 flex-shrink-0">
                     @auth
                         <span class="text-sm text-gray-700 hidden lg:inline">Hi, {{ Auth::user()->name }}</span>
-                        <a href="{{ route('dashboard') }}" class="px-4 py-2 bg-brand-green text-white rounded-full hover:bg-green-800 transition text-sm shadow-md">Dashboard</a>
+                        <a href="{{ route('dashboard') }}" class="px-5 py-2.5 bg-green-600 text-white rounded-full hover:bg-green-700 transition text-sm font-semibold shadow-lg hover:shadow-xl">Dashboard</a>
                     @else
-                        <a href="{{ route('register') }}" class="px-4 py-2 text-brand-green font-medium hover:text-brand-dark transition">Daftar</a>
-                        <a href="{{ route('login') }}" class="px-6 py-2 bg-brand-green text-white rounded-full hover:bg-green-800 transition shadow-md">Masuk</a>
+                        <a href="{{ route('register') }}" class="px-5 py-2.5 bg-white text-green-600 font-semibold hover:bg-green-50 transition border-2 border-green-600 rounded-full shadow-md">Daftar</a>
+                        <a href="{{ route('login') }}" class="px-6 py-2.5 bg-green-600 text-white rounded-full hover:bg-green-700 transition font-semibold shadow-lg hover:shadow-xl">Masuk</a>
                     @endauth
                 </div>
 
@@ -246,18 +247,18 @@
                             </div>
                             <div class="flex items-center gap-2">
                                 <span class="text-sm text-gray-500">Share:</span>
-                                <button class="share-btn p-2 rounded-full hover:bg-gray-100 transition">
-                                    <svg class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
+                                <button class="share-btn p-2 rounded-full bg-gray-100 hover:bg-green-100 transition border border-gray-200">
+                                    <svg class="w-5 h-5 text-gray-700 hover:text-green-600" fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/>
                                     </svg>
                                 </button>
-                                <button class="share-btn p-2 rounded-full hover:bg-gray-100 transition">
-                                    <svg class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
+                                <button class="share-btn p-2 rounded-full bg-gray-100 hover:bg-green-100 transition border border-gray-200">
+                                    <svg class="w-5 h-5 text-gray-700 hover:text-green-600" fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
                                     </svg>
                                 </button>
-                                <button class="share-btn p-2 rounded-full hover:bg-gray-100 transition">
-                                    <svg class="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 24 24">
+                                <button class="share-btn p-2 rounded-full bg-gray-100 hover:bg-green-100 transition border border-gray-200">
+                                    <svg class="w-5 h-5 text-gray-700 hover:text-green-600" fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/>
                                     </svg>
                                 </button>
@@ -404,14 +405,14 @@
 
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Rating</label>
-                            <div class="flex items-center space-x-2">
+                            <div class="flex items-center space-x-1" id="starRating">
                                 @for($i = 1; $i <= 5; $i++)
-                                    <label class="cursor-pointer">
+                                    <label class="cursor-pointer star-label" data-rating="{{ $i }}">
                                         <input type="radio" name="rating" value="{{ $i }}" 
-                                               class="hidden peer" 
+                                               class="hidden" 
                                                {{ ($userReview && $userReview->rating == $i) ? 'checked' : '' }}
                                                required>
-                                        <svg class="w-8 h-8 text-gray-300 peer-checked:text-yellow-400 hover:text-yellow-300 transition-colors fill-current" viewBox="0 0 20 20">
+                                        <svg class="w-10 h-10 text-gray-300 fill-current transition-colors star-icon" viewBox="0 0 20 20">
                                             <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
                                         </svg>
                                     </label>
@@ -485,7 +486,10 @@
                         
                         <div class="flex items-center space-x-3">
                             <button type="submit" 
-                                    class="px-6 py-2 bg-brand-green text-white rounded-full hover:bg-green-800 transition font-medium">
+                                    class="px-8 py-3.5 bg-green-600 text-white rounded-full hover:bg-green-700 transition font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center gap-2 text-base">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                                </svg>
                                 @auth
                                     @if($userReview)
                                         Update Review
@@ -498,14 +502,16 @@
                             </button>
                             @auth
                                 @if($userReview)
-                                    <form action="{{ route('products.reviews.destroy', [$product, $userReview]) }}" method="POST" class="inline">
+                                    <button type="button" onclick="deleteReview()" 
+                                            class="px-6 py-3.5 bg-red-600 text-white rounded-full hover:bg-red-700 transition font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center gap-2 text-base">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
+                                        Hapus Review
+                                    </button>
+                                    <form id="deleteReviewForm" action="{{ route('products.reviews.destroy', [$product, $userReview]) }}" method="POST" class="hidden">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" 
-                                                onclick="return confirm('Yakin ingin menghapus review?')"
-                                                class="px-6 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition font-medium">
-                                            Hapus Review
-                                        </button>
                                     </form>
                                 @endif
                             @endauth
@@ -597,11 +603,11 @@
                             </div>
                             <div class="flex space-x-3">
                                 <button type="button" onclick="closeGuestModal()" 
-                                        class="flex-1 px-6 py-2 border border-gray-300 text-gray-700 rounded-full hover:bg-gray-50 transition font-medium">
+                                        class="flex-1 px-6 py-3 border-2 border-gray-600 bg-white text-gray-800 rounded-full hover:bg-gray-200 hover:border-gray-700 transition font-bold shadow-md text-base">
                                     Batal
                                 </button>
                                 <button type="submit" 
-                                        class="flex-1 px-6 py-2 bg-brand-green text-white rounded-full hover:bg-green-800 transition font-medium">
+                                        class="flex-1 px-6 py-3 bg-green-600 text-white rounded-full hover:bg-green-700 transition font-bold shadow-lg text-base">
                                     Lanjutkan
                                 </button>
                             </div>
@@ -614,37 +620,58 @@
                 <div class="space-y-6">
                     @forelse($product->reviews()->latest()->get() as $review)
                         <div class="border-b border-gray-200 pb-6 last:border-0">
-                            <div class="flex items-start justify-between mb-3">
-                                <div class="flex items-center">
-                                    <div class="w-10 h-10 bg-brand-green rounded-full flex items-center justify-center text-white font-bold mr-3">
+                            <div class="flex items-start gap-4">
+                                <!-- Profile Picture -->
+                                <div class="flex-shrink-0">
+                                    <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-green-700 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-md">
                                         @if($review->user)
                                             {{ strtoupper(substr($review->user->name, 0, 1)) }}
                                         @else
                                             {{ strtoupper(substr($review->guest_name, 0, 1)) }}
                                         @endif
                                     </div>
-                                    <div>
-                                        <p class="font-semibold text-gray-900">
-                                            @if($review->user)
-                                                {{ $review->user->name }}
-                                            @else
-                                                {{ $review->guest_name }}
-                                            @endif
-                                        </p>
-                                        <div class="flex items-center mt-1">
-                                            @for($i = 1; $i <= 5; $i++)
-                                                <svg class="w-4 h-4 {{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-300' }} fill-current" viewBox="0 0 20 20">
-                                                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-                                                </svg>
-                                            @endfor
-                                        </div>
-                                    </div>
                                 </div>
-                                <span class="text-sm text-gray-500">{{ $review->created_at->diffForHumans() }}</span>
+
+                                <!-- Review Content -->
+                                <div class="flex-1">
+                                    <div class="flex items-start justify-between mb-2">
+                                        <div>
+                                            <p class="font-bold text-gray-900 text-base">
+                                                @if($review->user)
+                                                    {{ $review->user->name }}
+                                                @else
+                                                    {{ $review->guest_name }}
+                                                @endif
+                                            </p>
+                                            <div class="flex items-center gap-2 mt-0.5">
+                                                @if($review->user)
+                                                    <span class="text-xs text-gray-500">{{ $review->user->email }}</span>
+                                                @else
+                                                    <span class="text-xs text-gray-500">{{ $review->guest_email }}</span>
+                                                @endif
+                                                <span class="text-xs text-gray-400">•</span>
+                                                <span class="text-xs text-gray-500">{{ $review->provinsi }}</span>
+                                            </div>
+                                        </div>
+                                        <span class="text-xs text-gray-500 ml-2">{{ $review->created_at->diffForHumans() }}</span>
+                                    </div>
+
+                                    <!-- Rating Stars -->
+                                    <div class="flex items-center mb-3">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            <svg class="w-5 h-5 {{ $i <= $review->rating ? 'text-yellow-400' : 'text-gray-300' }} fill-current" viewBox="0 0 20 20">
+                                                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+                                            </svg>
+                                        @endfor
+                                        <span class="ml-2 text-sm font-semibold text-gray-700">{{ $review->rating }}.0</span>
+                                    </div>
+
+                                    <!-- Comment -->
+                                    @if($review->comment)
+                                        <p class="text-gray-700 leading-relaxed text-sm">{{ $review->comment }}</p>
+                                    @endif
+                                </div>
                             </div>
-                            @if($review->comment)
-                                <p class="text-gray-700 ml-13 leading-relaxed">{{ $review->comment }}</p>
-                            @endif
                         </div>
                     @empty
                         <div class="text-center py-8">
@@ -740,6 +767,27 @@
             document.getElementById('mobile-menu')?.classList.toggle('hidden');
         });
 
+        // Show success/error messages
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: '{{ session('success') }}',
+                confirmButtonColor: '#10B981',
+                timer: 3000,
+                timerProgressBar: true
+            });
+        @endif
+
+        @if(session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: '{{ session('error') }}',
+                confirmButtonColor: '#EF4444'
+            });
+        @endif
+
         @guest
         // Handle guest review form submission
         document.getElementById('reviewForm').addEventListener('submit', function(e) {
@@ -747,9 +795,10 @@
             const guestName = document.getElementById('guestNameHidden').value;
             const guestEmail = document.getElementById('guestEmailHidden').value;
             const guestPhone = document.getElementById('guestPhoneHidden').value;
+            const guestProvinsi = document.getElementById('guestProvinsiHidden').value;
 
             // Jika belum lengkap, tampilkan modal
-            if (!guestName || !guestEmail || !guestPhone) {
+            if (!guestName || !guestEmail || !guestPhone || !guestProvinsi) {
                 e.preventDefault();
                 openGuestModal();
             }
@@ -832,6 +881,26 @@
         });
         @endguest
 
+        @auth
+        // Delete review confirmation
+        function deleteReview() {
+            Swal.fire({
+                title: 'Hapus Review?',
+                text: "Review Anda akan dihapus secara permanen!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#EF4444',
+                cancelButtonColor: '#6B7280',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteReviewForm').submit();
+                }
+            });
+        }
+        @endauth
+
         // Image Gallery Functions
         let currentImageIndex = 0;
         const allImages = [
@@ -908,6 +977,47 @@
             const activeTab = document.getElementById('tab-' + tabName);
             activeTab.classList.remove('text-gray-500');
             activeTab.classList.add('text-green-600', 'border-b-2', 'border-green-600');
+        }
+
+        // Interactive Star Rating System
+        const starContainer = document.getElementById('starRating');
+        const starLabels = starContainer.querySelectorAll('.star-label');
+        const starIcons = starContainer.querySelectorAll('.star-icon');
+        let selectedRating = {{ $userReview ? $userReview->rating : 0 }};
+
+        // Initialize stars if there's existing review
+        if (selectedRating > 0) {
+            updateStars(selectedRating);
+        }
+
+        // Add hover effect
+        starLabels.forEach((label, index) => {
+            label.addEventListener('mouseenter', function() {
+                const rating = parseInt(this.dataset.rating);
+                updateStars(rating);
+            });
+
+            label.addEventListener('click', function() {
+                selectedRating = parseInt(this.dataset.rating);
+                this.querySelector('input').checked = true;
+            });
+        });
+
+        // Reset to selected rating when mouse leaves
+        starContainer.addEventListener('mouseleave', function() {
+            updateStars(selectedRating);
+        });
+
+        function updateStars(rating) {
+            starIcons.forEach((icon, index) => {
+                if (index < rating) {
+                    icon.classList.remove('text-gray-300');
+                    icon.classList.add('text-yellow-400');
+                } else {
+                    icon.classList.remove('text-yellow-400');
+                    icon.classList.add('text-gray-300');
+                }
+            });
         }
     </script>
 </body>
