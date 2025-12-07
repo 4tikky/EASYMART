@@ -564,7 +564,7 @@ async function editProduct(productId) {
                 // Validasi file jika ada
                 if (imageFile) {
                     const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-                    const maxSize = 2 * 1024 * 1024; // 2MB
+                    const maxSize = 5 * 1024 * 1024; // 2MB
                     
                     if (!validTypes.includes(imageFile.type)) {
                         Swal.showValidationMessage('❌ Format gambar harus JPG, JPEG, atau PNG');

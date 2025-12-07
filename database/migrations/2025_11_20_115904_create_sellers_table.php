@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->text('storeDescription')->nullable();
             $table->string('picName');
             $table->string('picPhone');
-            $table->string('picEmail');
+            $table->string('picEmail')->nullable();
             $table->string('picStreet');
             $table->string('picRT')->nullable();
             $table->string('picRW')->nullable();

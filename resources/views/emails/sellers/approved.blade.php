@@ -5,7 +5,7 @@
     <title>Pendaftaran Penjual Diterima</title>
 </head>
 <body>
-    <p>Assalamualaikum, {{ $seller->name }}.</p>
+    <p>Assalamualaikum, {{ $seller->picName }}.</p>
 
     <p>
         Pendaftaran akun penjual Anda di <strong>EasyMart</strong>
@@ -14,8 +14,8 @@
 
     <p>
         Anda sekarang dapat login ke EasyMart menggunakan email:
-        <strong>{{ $seller->email }}</strong> dan mulai mengelola toko
-        <strong>{{ $seller->nama_toko }}</strong>.
+        <strong>{{ $seller->user->email }}</strong> dan mulai mengelola toko
+        <strong>{{ $seller->storeName }}</strong>.
     </p>
 
     <p>Terima kasih telah bergabung dengan EasyMart.</p>

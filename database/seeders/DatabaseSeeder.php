@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Princess Nanda', // Nama Pemilik Akun
             'email' => 'seller@easymart.com', // Email Login
             'password' => Hash::make('password'),
+            'role' => User::ROLE_PENJUAL,
         ]);
 
         // Buat Data Toko untuk User di atas
@@ -36,7 +37,6 @@ class DatabaseSeeder extends Seeder
             'storeDescription' => 'Toko rajutan terbaik se-Undip!',
             'picName' => 'Princess Nanda',
             'picPhone' => '081234567890',
-            'picEmail' => 'business@nanda.com',
             'picStreet' => 'Jl. Tembalang No. 1',
             'picRT' => '01',
             'picRW' => '02',
@@ -44,7 +44,9 @@ class DatabaseSeeder extends Seeder
             'picCity' => 'Semarang',
             'picProvince' => 'Jawa Tengah',
             'picKtpNumber' => '3374123456789000',
-            'status' => 'active', // <--- PENTING: Langsung AKTIF biar bisa masuk dashboard
+            'picPhotoPath' => 'seller/seller-nanda/Senku.jpg',
+            'picKtpFilePath' => 'seller/seller-nanda/ktp_indo.webp',
+            'status' => 'pending',
         ]);
 
         // 3. Tambah Produk Contoh (Biar Dashboard ada isinya)
@@ -68,12 +70,64 @@ class DatabaseSeeder extends Seeder
             'image' => null,
         ]);
         
-        // 4. Akun ADMIN PLATFORM (Ceritanya Admin)
+        // 3. Akun PENJUAL PENDING 1
+        $pendingSeller1 = User::create([
+            'name' => 'Budi Santoso',
+            'email' => 'budi@example.com',
+            'password' => Hash::make('password'),
+            'role' => User::ROLE_PENJUAL,
+        ]);
+
+        Seller::create([
+            'user_id' => $pendingSeller1->id,
+            'storeName' => 'Toko Budi Electronic',
+            'storeDescription' => 'Jual elektronik murah meriah',
+            'picName' => 'Budi Santoso',
+            'picPhone' => '082345678901',
+            'picStreet' => 'Jl. Gatot Subroto No. 45',
+            'picRT' => '03',
+            'picRW' => '05',
+            'picVillage' => 'Pleburan',
+            'picCity' => 'Semarang',
+            'picProvince' => 'Jawa Tengah',
+            'picKtpNumber' => '3374567890123456',
+            'picPhotoPath' => null,
+            'picKtpFilePath' => null,
+            'status' => 'pending',
+        ]);
+
+        // 4. Akun PENJUAL PENDING 2
+        $pendingSeller2 = User::create([
+            'name' => 'Siti Aminah',
+            'email' => 'siti@example.com',
+            'password' => Hash::make('password'),
+            'role' => User::ROLE_PENJUAL,
+        ]);
+
+        Seller::create([
+            'user_id' => $pendingSeller2->id,
+            'storeName' => 'Warung Siti Fashion',
+            'storeDescription' => 'Fashion wanita modern',
+            'picName' => 'Siti Aminah',
+            'picPhone' => '083456789012',
+            'picStreet' => 'Jl. Pemuda No. 88',
+            'picRT' => '02',
+            'picRW' => '03',
+            'picVillage' => 'Simpang Lima',
+            'picCity' => 'Semarang',
+            'picProvince' => 'Jawa Tengah',
+            'picKtpNumber' => '3374098765432100',
+            'picPhotoPath' => null,
+            'picKtpFilePath' => null,
+            'status' => 'pending',
+        ]);
+
+        // 5. Akun ADMIN PLATFORM
         User::create([
             'name' => 'Admin Platform',
             'email' => 'admin@easymart.com',
             'password' => Hash::make('password'),
-            // Kalau nanti ada kolom 'role', tambahkan: 'role' => 'admin'
+            'role' => 'platform',
         ]);
     }
 }

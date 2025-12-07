@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Platform;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Seller;
 use App\Models\Product;
 use App\Models\Review; // kalau namanya beda, ganti sendiri
 use Illuminate\Http\RedirectResponse;
@@ -22,17 +23,9 @@ class SellerApprovalController extends Controller
     public function dashboard(): View
     {
         // ---- Ringkasan verifikasi seller ----
-        $pendingCount  = User::where('role', User::ROLE_PENJUAL)
-            ->where('status_verifikasi', User::STATUS_PENDING)
-            ->count();
-
-        $activeCount   = User::where('role', User::ROLE_PENJUAL)
-            ->where('status_verifikasi', User::STATUS_ACTIVE)
-            ->count();
-
-        $rejectedCount = User::where('role', User::ROLE_PENJUAL)
-            ->where('status_verifikasi', User::STATUS_REJECTED)
-            ->count();
+        $pendingCount  = Seller::where('status', 'pending')->count();
+        $activeCount   = Seller::where('status', 'active')->count();
+        $rejectedCount = Seller::where('status', 'rejected')->count();
 
         // ================== SRS-MartPlace-07 ==================
         // 1) Sebaran jumlah produk berdasarkan kategori
@@ -47,24 +40,20 @@ class SellerApprovalController extends Controller
             });
 
         // 2) Sebaran jumlah toko berdasarkan lokasi provinsi
-        //    diasumsikan ada relasi user->seller atau kolom 'provinsi' di tabel users/sellers
-        $storeByProvince = User::where('role', User::ROLE_PENJUAL)
-            ->selectRaw('provinsi, COUNT(*) as total')
-            ->groupBy('provinsi')
+        // 2) Sebaran jumlah toko berdasarkan provinsi
+        $sellerByProvince = Seller::selectRaw('picProvince, COUNT(*) as total')
+            ->groupBy('picProvince')
             ->get()
             ->map(function ($row) {
                 return [
-                    'province' => $row->provinsi ?? 'Tidak diketahui',
+                    'province' => $row->picProvince ?? 'Tidak diketahui',
                     'total'    => $row->total,
                 ];
             });
 
         // 3) Jumlah seller aktif dan tidak aktif
-        //    "Tidak aktif" di sini aku contohkan: selain ACTIVE = tidak aktif
         $sellerActiveCount   = $activeCount;
-        $sellerInactiveCount = User::where('role', User::ROLE_PENJUAL)
-            ->where('status_verifikasi', '!=', User::STATUS_ACTIVE)
-            ->count();
+        $sellerInactiveCount = Seller::where('status', '!=', 'active')->count();
 
         // 4) Jumlah pengunjung yang memberi komentar & rating
         $totalReviews        = Review::count();
@@ -89,7 +78,7 @@ class SellerApprovalController extends Controller
             'activeCount',
             'rejectedCount',
             'productByCategory',
-            'storeByProvince',
+            'sellerByProvince',
             'sellerActiveCount',
             'sellerInactiveCount',
             'totalReviews',
@@ -103,10 +92,10 @@ class SellerApprovalController extends Controller
      */
     public function index(Request $request): View
     {
-        $status = $request->query('status', User::STATUS_PENDING);
+        $status = $request->query('status', 'pending');
 
-        $sellers = User::where('role', User::ROLE_PENJUAL)
-            ->where('status_verifikasi', $status)
+        $sellers = \App\Models\Seller::with('user')
+            ->where('status', $status)
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
@@ -119,24 +108,21 @@ class SellerApprovalController extends Controller
     /**
      * Detail satu seller.
      */
-    public function show(User $seller): View
+    public function show(Seller $seller): View
     {
-        abort_unless($seller->role === User::ROLE_PENJUAL, 404);
-
+        $seller->load('user');
         return view('platform.sellers.show', compact('seller'));
     }
 
     /**
      * Approve seller -> status ACTIVE (sesuai SRS).
      */
-    public function approve(User $seller): RedirectResponse
+    public function approve(Seller $seller): RedirectResponse
     {
-        abort_unless($seller->role === User::ROLE_PENJUAL, 404);
-
-        $seller->status_verifikasi = User::STATUS_ACTIVE;
+        $seller->status = 'active';
         $seller->save();
 
-        Mail::to($seller->email)->send(new SellerApprovedMail($seller));
+        Mail::to($seller->user->email)->send(new SellerApprovedMail($seller));
 
         return back()->with('status', 'Penjual berhasil diaktifkan.');
     }
@@ -144,15 +130,13 @@ class SellerApprovalController extends Controller
     /**
      * Reject seller -> status REJECTED.
      */
-    public function reject(User $seller): RedirectResponse
+    public function reject(Seller $seller): RedirectResponse
     {
-        abort_unless($seller->role === User::ROLE_PENJUAL, 404);
-
-        $seller->status_verifikasi = User::STATUS_REJECTED;
+        $seller->status = 'rejected';
         $seller->save();
 
-        Mail::to($seller->email)->send(new SellerRejectedMail($seller));
+        Mail::to($seller->user->email)->send(new SellerRejectedMail($seller));
 
-        return back()->with('status', 'Pendaftaran penjual ditolak.');
+        return back()->with('status', 'Penjual berhasil ditolak.');
     }
 }

@@ -30,10 +30,10 @@ class AuthenticatedSessionController extends Controller
 
         $user = $request->user();
 
-        // 1. CEK STATUS PENJUAL (Tetap kita cek verifikasinya)
+        // 1. CEK STATUS PENJUAL (Cek status di tabel sellers)
         if ($user->role === 'penjual') {
-            // Pastikan relasi seller ada sebelum dicek
-            if ($user->status_verifikasi !== User::STATUS_ACTIVE) {
+            // Cek apakah user punya seller dan statusnya active
+            if (!$user->seller || $user->seller->status !== 'active') {
                 Auth::guard('web')->logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
@@ -42,10 +42,6 @@ class AuthenticatedSessionController extends Controller
                     'email' => 'Akun penjual Anda belum disetujui admin.',
                 ])->onlyInput('email');
             }
-            
-            // PERUBAHAN DI SINI:
-            // Jangan return redirect()->route('dashboard');
-            // Biarkan kodingan lanjut ke bawah (ke redirect '/')
         }
 
         // 2. KHUSUS ADMIN/PLATFORM (Biasanya Admin tetap mau langsung Dashboard)

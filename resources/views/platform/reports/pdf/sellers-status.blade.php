@@ -181,25 +181,25 @@
         @forelse ($sellers as $index => $seller)
             @php
                 // Logika Label & Badge Warna
-                $statusLabel = match ($seller->status_verifikasi) {
-                    \App\Models\User::STATUS_ACTIVE   => 'AKTIF',
-                    \App\Models\User::STATUS_PENDING  => 'PENDING',
-                    \App\Models\User::STATUS_REJECTED => 'NON-AKTIF',
-                    default                           => strtoupper($seller->status_verifikasi),
+                $statusLabel = match ($seller->status) {
+                    'active'   => 'AKTIF',
+                    'pending'  => 'PENDING',
+                    'rejected' => 'DITOLAK',
+                    default    => strtoupper($seller->status),
                 };
 
-                $badgeClass = match ($seller->status_verifikasi) {
-                    \App\Models\User::STATUS_ACTIVE   => 'bg-green',
-                    \App\Models\User::STATUS_PENDING  => 'bg-yellow',
-                    \App\Models\User::STATUS_REJECTED => 'bg-red',
-                    default                           => 'bg-red',
+                $badgeClass = match ($seller->status) {
+                    'active'   => 'bg-green',
+                    'pending'  => 'bg-yellow',
+                    'rejected' => 'bg-red',
+                    default    => 'bg-red',
                 };
             @endphp
             <tr>
                 <td class="text-center">{{ $index + 1 }}</td>
-                <td class="text-bold">{{ $seller->user_login }}</td>
-                <td>{{ $seller->pic_name }}</td>
-                <td>{{ $seller->nama_toko ?? '-' }}</td>
+                <td class="text-bold">{{ $seller->user->email }}</td>
+                <td>{{ $seller->picName }}</td>
+                <td>{{ $seller->storeName ?? '-' }}</td>
                 <td class="text-center">
                     <span class="badge {{ $badgeClass }}">{{ $statusLabel }}</span>
                 </td>

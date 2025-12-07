@@ -244,8 +244,8 @@
         const productCategoryLabels = {!! json_encode($productByCategory->pluck('category')) !!};
         const productCategoryData   = {!! json_encode($productByCategory->pluck('total')) !!};
 
-        const storeProvinceLabels = {!! json_encode($storeByProvince->pluck('province')) !!};
-        const storeProvinceData   = {!! json_encode($storeByProvince->pluck('total')) !!};
+        const storeProvinceLabels = {!! json_encode($sellerByProvince->pluck('province')) !!};
+        const storeProvinceData   = {!! json_encode($sellerByProvince->pluck('total')) !!};
 
         const sellerStatusLabels = ['Aktif', 'Tidak Aktif'];
         const sellerStatusData   = [{{ $sellerActiveCount }}, {{ $sellerInactiveCount }}];

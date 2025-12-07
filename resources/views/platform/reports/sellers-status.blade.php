@@ -210,34 +210,34 @@
                     @forelse ($sellers as $index => $seller)
                         @php
                             // Mapping Status Text
-                            $statusLabel = match ($seller->status_verifikasi) {
-                                \App\Models\User::STATUS_ACTIVE   => 'AKTIF',
-                                \App\Models\User::STATUS_PENDING  => 'PENDING',
-                                \App\Models\User::STATUS_REJECTED => 'TIDAK AKTIF',
-                                default                           => strtoupper($seller->status_verifikasi),
+                            $statusLabel = match ($seller->status) {
+                                'active'   => 'AKTIF',
+                                'pending'  => 'PENDING',
+                                'rejected' => 'DITOLAK',
+                                default    => strtoupper($seller->status),
                             };
 
                             // Mapping Badge Class
-                            $badgeClass = match ($seller->status_verifikasi) {
-                                \App\Models\User::STATUS_ACTIVE   => 'badge-status badge-active',
-                                \App\Models\User::STATUS_PENDING  => 'badge-status badge-pending',
-                                \App\Models\User::STATUS_REJECTED => 'badge-status badge-inactive',
-                                default                           => 'badge-status badge-inactive',
+                            $badgeClass = match ($seller->status) {
+                                'active'   => 'badge-status badge-active',
+                                'pending'  => 'badge-status badge-pending',
+                                'rejected' => 'badge-status badge-inactive',
+                                default    => 'badge-status badge-inactive',
                             };
 
                             // Icon logic
-                            $icon = match ($seller->status_verifikasi) {
-                                \App\Models\User::STATUS_ACTIVE   => '✅',
-                                \App\Models\User::STATUS_PENDING  => '⏳',
-                                \App\Models\User::STATUS_REJECTED => '❌',
+                            $icon = match ($seller->status) {
+                                'active'   => '✅',
+                                'pending'  => '⏳',
+                                'rejected' => '❌',
                                 default => '',
                             };
                         @endphp
                         <tr>
                             <td class="text-center font-medium text-slate-500">{{ $index + 1 }}</td>
-                            <td class="font-medium text-slate-700">{{ $seller->user_login }}</td>
-                            <td class="text-slate-600">{{ $seller->pic_name }}</td>
-                            <td class="text-slate-600 font-medium">{{ $seller->nama_toko ?? '-' }}</td>
+                            <td class="font-medium text-slate-700">{{ $seller->user->email }}</td>
+                            <td class="text-slate-600">{{ $seller->picName }}</td>
+                            <td class="text-slate-600 font-medium">{{ $seller->storeName ?? '-' }}</td>
                             <td class="text-center">
                                 <span class="{{ $badgeClass }}">
                                     <span class="mr-1">{{ $icon }}</span> {{ $statusLabel }}

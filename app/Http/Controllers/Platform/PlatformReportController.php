@@ -19,17 +19,18 @@ class PlatformReportController extends Controller
         $generatedAt = now();
         $processedBy = Auth::user()->name;
 
-        // Ambil data user dengan role penjual
-        $sellers = User::where('role', User::ROLE_PENJUAL)
+        // Ambil data seller dengan relasi user
+        $sellers = Seller::with('user')
             ->select(
-                'email as user_login',   // dipakai di Blade
-                'name as pic_name',      // dipakai di Blade
-                'nama_toko',             // dipakai di Blade
-                'status_verifikasi'      // dipakai di Blade + match() status
+                'id',
+                'user_id',
+                'picName',
+                'storeName',
+                'status'
             )
             // urutkan: yang aktif dulu, baru yang lain
-            ->orderByRaw("status_verifikasi = '".User::STATUS_ACTIVE."' DESC")
-            ->orderBy('name')
+            ->orderByRaw("status = 'active' DESC")
+            ->orderBy('picName')
             ->get();
 
         return view('platform.reports.sellers-status', [
@@ -46,15 +47,16 @@ class PlatformReportController extends Controller
         $generatedAt = now();
         $processedBy = Auth::user()->name;
 
-        $sellers = User::where('role', User::ROLE_PENJUAL)
+        $sellers = Seller::with('user')
             ->select(
-                'email as user_login',
-                'name as pic_name',
-                'nama_toko',
-                'status_verifikasi'
+                'id',
+                'user_id',
+                'picName',
+                'storeName',
+                'status'
             )
-            ->orderByRaw("status_verifikasi = '".User::STATUS_ACTIVE."' DESC")
-            ->orderBy('name')
+            ->orderByRaw("status = 'active' DESC")
+            ->orderBy('picName')
             ->get();
 
         $pdf = Pdf::loadView('platform.reports.pdf.sellers-status', [

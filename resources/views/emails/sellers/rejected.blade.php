@@ -5,7 +5,7 @@
     <title>Pendaftaran Penjual Ditolak</title>
 </head>
 <body>
-    <p>Assalamualaikum, {{ $seller->name }}.</p>
+    <p>Assalamualaikum, {{ $seller->picName }}.</p>
 
     <p>
         Setelah dilakukan pengecekan kelengkapan administrasi,

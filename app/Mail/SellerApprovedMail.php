@@ -2,7 +2,7 @@
 
 namespace App\Mail;
 
-use App\Models\User;
+use App\Models\Seller;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -11,9 +11,9 @@ class SellerApprovedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public User $seller;
+    public Seller $seller;
 
-    public function __construct(User $seller)
+    public function __construct(Seller $seller)
     {
         $this->seller = $seller;
     }
