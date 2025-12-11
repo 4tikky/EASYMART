@@ -1,0 +1,162 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+
+class UsersTableSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        DB::table('users')->insert([
+            [
+                'id' => 1,
+                'name' => 'Nanda Pembeli',
+                'email' => 'pembeli@easymart.com',
+                'email_verified_at' => null,
+                'password' => '$2y$12$iQyKc43WxHIFd02yQDzcTuAuuYqdeEoEmwoYPMqlpMQvrLPdboOXG',
+                'role' => 'penjual',
+                'status_verifikasi' => 'rejected',
+                'nama_toko' => null,
+                'deskripsi_singkat' => null,
+                'no_handphone_pic' => null,
+                'alamat_pic' => null,
+                'rt' => null,
+                'rw' => null,
+                'nama_kelurahan' => null,
+                'kabupaten_kota' => null,
+                'provinsi' => null,
+                'no_ktp_pic' => null,
+                'foto_pic' => null,
+                'file_upload_ktp_pic' => null,
+                'remember_token' => null,
+                'created_at' => '2025-12-11 02:39:24',
+                'updated_at' => '2025-12-11 03:43:16'
+            ],
+            [
+                'id' => 2,
+                'name' => 'Princess Nanda',
+                'email' => 'seller@easymart.com',
+                'email_verified_at' => null,
+                'password' => '$2y$12$a7cQJ3Bo0k4G68LguiYChOO3mPJw5RVXk1mR6QbbNFVAESgkYpIYu',
+                'role' => 'penjual',
+                'status_verifikasi' => 'approved',
+                'nama_toko' => null,
+                'deskripsi_singkat' => null,
+                'no_handphone_pic' => null,
+                'alamat_pic' => null,
+                'rt' => null,
+                'rw' => null,
+                'nama_kelurahan' => null,
+                'kabupaten_kota' => null,
+                'provinsi' => null,
+                'no_ktp_pic' => null,
+                'foto_pic' => null,
+                'file_upload_ktp_pic' => null,
+                'remember_token' => null,
+                'created_at' => '2025-12-11 02:39:24',
+                'updated_at' => '2025-12-11 03:43:03'
+            ],
+            [
+                'id' => 3,
+                'name' => 'Budi Santoso',
+                'email' => 'budi@example.com',
+                'email_verified_at' => null,
+                'password' => '$2y$12$FtZCqlTe69oN176uOroDjOZCCZ8/O.0SweWNBv9BPFGMzQSAb45By',
+                'role' => 'penjual',
+                'status_verifikasi' => 'pending',
+                'nama_toko' => null,
+                'deskripsi_singkat' => null,
+                'no_handphone_pic' => null,
+                'alamat_pic' => null,
+                'rt' => null,
+                'rw' => null,
+                'nama_kelurahan' => null,
+                'kabupaten_kota' => null,
+                'provinsi' => null,
+                'no_ktp_pic' => null,
+                'foto_pic' => null,
+                'file_upload_ktp_pic' => null,
+                'remember_token' => null,
+                'created_at' => '2025-12-11 02:39:24',
+                'updated_at' => '2025-12-11 02:39:24'
+            ],
+            [
+                'id' => 4,
+                'name' => 'Siti Aminah',
+                'email' => 'siti@example.com',
+                'email_verified_at' => null,
+                'password' => '$2y$12$2m4ICFSyjTMdKaTB3sCwKeuhDjthACKcjozONZ9ydm0wKEMAJhE82',
+                'role' => 'penjual',
+                'status_verifikasi' => 'pending',
+                'nama_toko' => null,
+                'deskripsi_singkat' => null,
+                'no_handphone_pic' => null,
+                'alamat_pic' => null,
+                'rt' => null,
+                'rw' => null,
+                'nama_kelurahan' => null,
+                'kabupaten_kota' => null,
+                'provinsi' => null,
+                'no_ktp_pic' => null,
+                'foto_pic' => null,
+                'file_upload_ktp_pic' => null,
+                'remember_token' => null,
+                'created_at' => '2025-12-11 02:39:25',
+                'updated_at' => '2025-12-11 02:39:25'
+            ],
+            [
+                'id' => 5,
+                'name' => 'Admin Platform',
+                'email' => 'admin@easymart.com',
+                'email_verified_at' => null,
+                'password' => '$2y$12$5axyKA78RlUuNhJMqgK3ReBLyKBUXfiYyqUJQ3mXvv75vzQULjfJO',
+                'role' => 'platform',
+                'status_verifikasi' => 'pending',
+                'nama_toko' => null,
+                'deskripsi_singkat' => null,
+                'no_handphone_pic' => null,
+                'alamat_pic' => null,
+                'rt' => null,
+                'rw' => null,
+                'nama_kelurahan' => null,
+                'kabupaten_kota' => null,
+                'provinsi' => null,
+                'no_ktp_pic' => null,
+                'foto_pic' => null,
+                'file_upload_ktp_pic' => null,
+                'remember_token' => null,
+                'created_at' => '2025-12-11 02:39:25',
+                'updated_at' => '2025-12-11 02:39:25'
+            ],
+            [
+                'id' => 10,
+                'name' => 'Test',
+                'email' => 'bramantyo989@gmail.com',
+                'email_verified_at' => null,
+                'password' => '$2y$12$YlXXRPplXzXm378ASGvmyuDq6FWkQPJJSzKJspcjS3l2Tgix5YZuu',
+                'role' => 'penjual',
+                'status_verifikasi' => 'approved',
+                'nama_toko' => 'Test',
+                'deskripsi_singkat' => 'Test',
+                'no_handphone_pic' => 081081081081,
+                'alamat_pic' => 'Jalan jalan',
+                'rt' => 002,
+                'rw' => 004,
+                'nama_kelurahan' => 'NATAH',
+                'kabupaten_kota' => 'KABUPATEN GUNUNGKIDUL',
+                'provinsi' => 'DAERAH ISTIMEWA YOGYAKARTA',
+                'no_ktp_pic' => 3322332233223322,
+                'foto_pic' => 'foto_pic/ygz4ddi7KZN3E2jEw5zZceFMiUrJcgAORkhVBBbr.jpg',
+                'file_upload_ktp_pic' => null,
+                'remember_token' => null,
+                'created_at' => '2025-12-11 03:36:11',
+                'updated_at' => '2025-12-11 03:38:20'
+            ]
+        ]);
+    }
+}

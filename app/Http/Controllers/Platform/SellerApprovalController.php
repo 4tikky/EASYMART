@@ -78,6 +78,27 @@ class SellerApprovalController extends Controller
             ->unique()
             ->count();
 
+        // Data untuk tabel-tabel dashboard
+        // Tabel Status Penjual
+        $recentSellers = User::where('role', User::ROLE_PENJUAL)
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+
+        // Tabel Rating Produk - hitung dari reviews
+        $topProducts = Product::with('seller')
+            ->withAvg('reviews', 'rating')
+            ->orderBy('reviews_avg_rating', 'desc')
+            ->take(5)
+            ->get();
+
+        // Tabel Lokasi Toko
+        $recentStores = User::where('role', User::ROLE_PENJUAL)
+            ->where('status_verifikasi', 'approved')
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+
         return view('platform.dashboard', compact(
             'pendingCount',
             'activeCount',
@@ -87,7 +108,10 @@ class SellerApprovalController extends Controller
             'sellerActiveCount',
             'sellerInactiveCount',
             'totalReviews',
-            'totalReviewVisitors'
+            'totalReviewVisitors',
+            'recentSellers',
+            'topProducts',
+            'recentStores'
         ));
     }
 
