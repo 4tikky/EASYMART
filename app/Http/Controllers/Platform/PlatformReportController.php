@@ -187,4 +187,47 @@ class PlatformReportController extends Controller
 
         return $pdf->download('laporan-produk-berdasarkan-rating-'.now()->format('Ymd_His').'.pdf');
     }
+
+    // Laporan produk berdasarkan kategori (WEB)
+    public function productsByCategory()
+    {
+        $generatedAt = now();
+        $processedBy = Auth::user()->name;
+
+        $products = Product::with(['seller'])
+            ->select('id', 'name', 'category', 'price', 'stock', 'seller_id')
+            ->orderBy('category')
+            ->orderBy('name')
+            ->get();
+
+        return view('platform.reports.products-by-category', [
+            'products'    => $products,
+            'generatedAt' => $generatedAt,
+            'processedBy' => $processedBy,
+            'export'      => false,
+        ]);
+    }
+
+    // Laporan produk berdasarkan kategori (PDF)
+    public function productsByCategoryPdf()
+    {
+        $generatedAt = now();
+        $processedBy = Auth::user()->name;
+
+        $products = Product::with(['seller'])
+            ->select('id', 'name', 'category', 'price', 'stock', 'seller_id')
+            ->orderBy('category')
+            ->orderBy('name')
+            ->get();
+
+        $pdf = Pdf::loadView('platform.reports.pdf.products-by-category', [
+                'products'    => $products,
+                'generatedAt' => $generatedAt,
+                'processedBy' => $processedBy,
+                'export'      => true,
+            ])
+            ->setPaper('A4', 'portrait');
+
+        return $pdf->download('laporan-produk-per-kategori-'.now()->format('Ymd_His').'.pdf');
+    }
 }

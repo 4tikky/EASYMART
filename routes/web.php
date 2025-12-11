@@ -107,9 +107,9 @@ Route::middleware(['auth', 'platform'])
         
         // Seller Management
         Route::get('/sellers', [SellerApprovalController::class, 'index'])->name('sellers.index');
-        Route::get('/sellers/{seller}', [SellerApprovalController::class, 'show'])->name('sellers.show');
-        Route::post('/sellers/{seller}/approve', [SellerApprovalController::class, 'approve'])->name('sellers.approve');
-        Route::post('/sellers/{seller}/reject', [SellerApprovalController::class, 'reject'])->name('sellers.reject');
+        Route::get('/sellers/{id}', [SellerApprovalController::class, 'show'])->name('sellers.show');
+        Route::post('/sellers/{id}/approve', [SellerApprovalController::class, 'approve'])->name('sellers.approve');
+        Route::post('/sellers/{id}/reject', [SellerApprovalController::class, 'reject'])->name('sellers.reject');
         
         // Category Management
         Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
@@ -125,6 +125,8 @@ Route::middleware(['auth', 'platform'])
         Route::get('/reports/stores-by-province/pdf', [PlatformReportController::class, 'storesByProvincePdf'])->name('reports.stores-by-province.pdf');
         Route::get('/reports/products-by-rating', [PlatformReportController::class, 'productsByRating'])->name('reports.products-by-rating');
         Route::get('/reports/products-by-rating/pdf', [PlatformReportController::class, 'productsByRatingPdf'])->name('reports.products-by-rating.pdf');
+        Route::get('/reports/products-by-category', [PlatformReportController::class, 'productsByCategory'])->name('reports.products-by-category');
+        Route::get('/reports/products-by-category/pdf', [PlatformReportController::class, 'productsByCategoryPdf'])->name('reports.products-by-category.pdf');
     });
 
 require __DIR__.'/auth.php';
