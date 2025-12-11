@@ -107,9 +107,9 @@ Route::middleware(['auth', 'platform'])
         
         // Seller Management
         Route::get('/sellers', [SellerApprovalController::class, 'index'])->name('sellers.index');
-        Route::get('/sellers/{seller}', [SellerApprovalController::class, 'show'])->name('sellers.show');
-        Route::post('/sellers/{seller}/approve', [SellerApprovalController::class, 'approve'])->name('sellers.approve');
-        Route::post('/sellers/{seller}/reject', [SellerApprovalController::class, 'reject'])->name('sellers.reject');
+        Route::get('/sellers/{id}', [SellerApprovalController::class, 'show'])->name('sellers.show');
+        Route::post('/sellers/{id}/approve', [SellerApprovalController::class, 'approve'])->name('sellers.approve');
+        Route::post('/sellers/{id}/reject', [SellerApprovalController::class, 'reject'])->name('sellers.reject');
         
         // Category Management
         Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');

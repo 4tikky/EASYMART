@@ -22,10 +22,13 @@ class SellerApprovalController extends Controller
      */
     public function dashboard(): View
     {
-        // ---- Ringkasan verifikasi seller ----
-        $pendingCount  = Seller::where('status', 'pending')->count();
-        $activeCount   = Seller::where('status', 'active')->count();
-        $rejectedCount = Seller::where('status', 'rejected')->count();
+        // ---- Ringkasan verifikasi seller dari tabel USERS ----
+        $pendingCount  = User::where('role', User::ROLE_PENJUAL)
+            ->where('status_verifikasi', 'pending')->count();
+        $activeCount   = User::where('role', User::ROLE_PENJUAL)
+            ->where('status_verifikasi', 'approved')->count();
+        $rejectedCount = User::where('role', User::ROLE_PENJUAL)
+            ->where('status_verifikasi', 'rejected')->count();
 
         // ================== SRS-MartPlace-07 ==================
         // 1) Sebaran jumlah produk berdasarkan kategori
@@ -39,21 +42,23 @@ class SellerApprovalController extends Controller
                 ];
             });
 
-        // 2) Sebaran jumlah toko berdasarkan lokasi provinsi
-        // 2) Sebaran jumlah toko berdasarkan provinsi
-        $sellerByProvince = Seller::selectRaw('picProvince, COUNT(*) as total')
-            ->groupBy('picProvince')
+        // 2) Sebaran jumlah toko berdasarkan provinsi (dari users yang approved)
+        $sellerByProvince = User::where('role', User::ROLE_PENJUAL)
+            ->where('status_verifikasi', 'approved')
+            ->selectRaw('provinsi, COUNT(*) as total')
+            ->groupBy('provinsi')
             ->get()
             ->map(function ($row) {
                 return [
-                    'province' => $row->picProvince ?? 'Tidak diketahui',
+                    'province' => $row->provinsi ?? 'Tidak diketahui',
                     'total'    => $row->total,
                 ];
             });
 
         // 3) Jumlah seller aktif dan tidak aktif
         $sellerActiveCount   = $activeCount;
-        $sellerInactiveCount = Seller::where('status', '!=', 'active')->count();
+        $sellerInactiveCount = User::where('role', User::ROLE_PENJUAL)
+            ->where('status_verifikasi', '!=', 'approved')->count();
 
         // 4) Jumlah pengunjung yang memberi komentar & rating
         $totalReviews        = Review::count();
@@ -93,9 +98,18 @@ class SellerApprovalController extends Controller
     public function index(Request $request): View
     {
         $status = $request->query('status', 'pending');
+        
+        // Map status untuk users table
+        $statusMap = [
+            'pending' => 'pending',
+            'active' => 'approved',
+            'rejected' => 'rejected',
+        ];
+        
+        $userStatus = $statusMap[$status] ?? 'pending';
 
-        $sellers = \App\Models\Seller::with('user')
-            ->where('status', $status)
+        $sellers = User::where('role', User::ROLE_PENJUAL)
+            ->where('status_verifikasi', $userStatus)
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
@@ -108,21 +122,46 @@ class SellerApprovalController extends Controller
     /**
      * Detail satu seller.
      */
-    public function show(Seller $seller): View
+    public function show($id): View
     {
-        $seller->load('user');
+        $seller = User::where('role', User::ROLE_PENJUAL)->findOrFail($id);
         return view('platform.sellers.show', compact('seller'));
     }
 
     /**
-     * Approve seller -> status ACTIVE (sesuai SRS).
+     * Approve seller -> status APPROVED dan create record di tabel sellers.
      */
-    public function approve(Seller $seller): RedirectResponse
+    public function approve($id): RedirectResponse
     {
-        $seller->status = 'active';
-        $seller->save();
+        $user = User::where('role', User::ROLE_PENJUAL)->findOrFail($id);
+        
+        // Update status di users
+        $user->status_verifikasi = 'approved';
+        $user->save();
+        
+        // Buat record di tabel sellers (untuk relasi dengan products)
+        if (!$user->seller) {
+            Seller::create([
+                'user_id' => $user->id,
+                'storeName' => $user->nama_toko,
+                'storeDescription' => $user->deskripsi_singkat,
+                'picName' => $user->name,
+                'picPhone' => $user->no_handphone_pic,
+                'picEmail' => $user->email,
+                'picStreet' => $user->alamat_pic,
+                'picRT' => $user->rt,
+                'picRW' => $user->rw,
+                'picVillage' => $user->nama_kelurahan,
+                'picCity' => $user->kabupaten_kota,
+                'picProvince' => $user->provinsi,
+                'picKtpNumber' => $user->no_ktp_pic,
+                'picPhotoPath' => $user->foto_pic,
+                'picKtpFilePath' => $user->file_upload_ktp_pic,
+                'status' => 'active',
+            ]);
+        }
 
-        Mail::to($seller->user->email)->send(new SellerApprovedMail($seller));
+        Mail::to($user->email)->send(new SellerApprovedMail($user));
 
         return back()->with('status', 'Penjual berhasil diaktifkan.');
     }
@@ -130,12 +169,14 @@ class SellerApprovalController extends Controller
     /**
      * Reject seller -> status REJECTED.
      */
-    public function reject(Seller $seller): RedirectResponse
+    public function reject($id): RedirectResponse
     {
-        $seller->status = 'rejected';
-        $seller->save();
+        $user = User::where('role', User::ROLE_PENJUAL)->findOrFail($id);
+        
+        $user->status_verifikasi = 'rejected';
+        $user->save();
 
-        Mail::to($seller->user->email)->send(new SellerRejectedMail($seller));
+        Mail::to($user->email)->send(new SellerRejectedMail($user));
 
         return back()->with('status', 'Penjual berhasil ditolak.');
     }

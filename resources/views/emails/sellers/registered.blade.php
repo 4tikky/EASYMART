@@ -56,7 +56,7 @@
     </div>
     
     <div class="content">
-        <p>Halo, <strong>{{ $seller->picName }}</strong>!</p>
+        <p>Halo, <strong>{{ $user->name }}</strong>!</p>
 
         <p>
             Terima kasih telah mendaftar sebagai penjual di <strong>EasyMart</strong>. 
@@ -68,19 +68,19 @@
             <table style="width: 100%;">
                 <tr>
                     <td><strong>Nama Toko</strong></td>
-                    <td>: {{ $seller->storeName }}</td>
+                    <td>: {{ $user->nama_toko }}</td>
                 </tr>
                 <tr>
                     <td><strong>Penanggung Jawab</strong></td>
-                    <td>: {{ $seller->picName }}</td>
+                    <td>: {{ $user->name }}</td>
                 </tr>
                 <tr>
                     <td><strong>Email</strong></td>
-                    <td>: {{ $seller->picEmail }}</td>
+                    <td>: {{ $user->email }}</td>
                 </tr>
                 <tr>
                     <td><strong>No. HP</strong></td>
-                    <td>: {{ $seller->picPhone }}</td>
+                    <td>: {{ $user->no_handphone_pic }}</td>
                 </tr>
                 <tr>
                     <td><strong>Status</strong></td>

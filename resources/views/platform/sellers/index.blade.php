@@ -183,30 +183,30 @@
                             <tr class="divide-x divide-gray-200 hover:bg-slate-50 transition-colors duration-150">
                                 <td class="py-3 px-4">
                                     <div class="flex items-center gap-3">
-                                        @if($seller->picPhotoPath)
-                                            <img src="{{ asset('storage/' . $seller->picPhotoPath) }}" 
-                                                 alt="Foto {{ $seller->storeName }}" 
+                                        @if($seller->foto_pic)
+                                            <img src="{{ asset('storage/' . $seller->foto_pic) }}" 
+                                                 alt="Foto {{ $seller->nama_toko }}" 
                                                  class="w-12 h-12 rounded-full object-cover border-2 border-green-500">
                                         @else
                                             <div class="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center text-white font-bold text-lg">
-                                                {{ strtoupper(substr($seller->storeName, 0, 1)) }}
+                                                {{ strtoupper(substr($seller->nama_toko ?? 'T', 0, 1)) }}
                                             </div>
                                         @endif
-                                        <span class="font-semibold text-gray-800">{{ $seller->storeName }}</span>
+                                        <span class="font-semibold text-gray-800">{{ $seller->nama_toko }}</span>
                                     </div>
                                 </td>
-                                <td class="py-3 px-4 text-gray-600">{{ $seller->picName }}</td>
-                                <td class="py-3 px-4 text-gray-600">{{ $seller->user->email }}</td>
-                                <td class="py-3 px-4 text-gray-600">{{ $seller->picPhone }}</td>
+                                <td class="py-3 px-4 text-gray-600">{{ $seller->name }}</td>
+                                <td class="py-3 px-4 text-gray-600">{{ $seller->email }}</td>
+                                <td class="py-3 px-4 text-gray-600">{{ $seller->no_handphone_pic }}</td>
                                 <td class="py-3 px-4 text-gray-600">
-                                    {{ $seller->picCity }}, {{ $seller->picProvince }}
+                                    {{ $seller->kabupaten_kota }}, {{ $seller->provinsi }}
                                 </td>
                                 <td class="py-3 px-4">
                                     <span class="badge-status
-                                        @if($seller->status === 'pending') badge-pending
-                                        @elseif($seller->status === 'active') badge-active
+                                        @if($seller->status_verifikasi === 'pending') badge-pending
+                                        @elseif($seller->status_verifikasi === 'approved') badge-active
                                         @else badge-rejected @endif">
-                                        {{ $seller->status }}
+                                        {{ $seller->status_verifikasi }}
                                     </span>
                                 </td>
                                 <td class="py-3 px-4">

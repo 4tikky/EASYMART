@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Seller;
+use App\Models\User;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\Category;
@@ -78,32 +79,51 @@ class SellerController extends Controller
         ]);
 
         // Upload foto jika ada
+        $fotoPath = null;
         if ($request->hasFile('picPhotoPath')) {
-            $validated['picPhotoPath'] = $request->file('picPhotoPath')->store('seller-photos', 'public');
+            $fotoPath = $request->file('picPhotoPath')->store('seller-photos', 'public');
         }
 
+        $ktpPath = null;
         if ($request->hasFile('picKtpFilePath')) {
-            $validated['picKtpFilePath'] = $request->file('picKtpFilePath')->store('seller-ktp', 'public');
+            $ktpPath = $request->file('picKtpFilePath')->store('seller-ktp', 'public');
         }
 
-        // Simpan ke database
-        $seller = new Seller($validated);
-        $seller->user_id = Auth::id();
-        $seller->status = 'pending'; // Default status pending
-        $seller->save();
+        // Update data user yang sedang login dengan data toko
+        /** @var User $user */
+        $user = Auth::user();
+        $user->name = $validated['picName'];
+        $user->email = $validated['picEmail'];
+        $user->role = User::ROLE_PENJUAL;
+        $user->status_verifikasi = User::STATUS_PENDING;
+        $user->nama_toko = $validated['storeName'];
+        $user->deskripsi_singkat = $validated['storeDescription'];
+        $user->no_handphone_pic = $validated['picPhone'];
+        $user->alamat_pic = $validated['picStreet'];
+        $user->rt = $validated['picRT'];
+        $user->rw = $validated['picRW'];
+        $user->nama_kelurahan = $validated['picVillage'];
+        $user->kabupaten_kota = $validated['picCity'];
+        $user->provinsi = $validated['picProvince'];
+        $user->no_ktp_pic = $validated['picKtpNumber'];
+        $user->foto_pic = $fotoPath;
+        $user->file_upload_ktp_pic = $ktpPath;
+        $user->save();
 
-        Log::info('Seller registered successfully - ID: ' . $seller->id . ', Store: ' . $seller->storeName);
+        Log::info('Seller registered successfully - User ID: ' . $user->id . ', Store: ' . $user->nama_toko);
 
         // Kirim email konfirmasi pendaftaran
         try {
-            Mail::to($seller->picEmail)->send(new SellerRegisteredMail($seller));
-            Log::info('Registration confirmation email sent to: ' . $seller->picEmail);
+            Mail::to($user->email)->send(new SellerRegisteredMail($user));
+            Log::info('Registration confirmation email sent to: ' . $user->email);
         } catch (\Exception $e) {
             Log::error('Failed to send registration email: ' . $e->getMessage());
             // Tetap lanjutkan meskipun email gagal
         }
 
-        return redirect()->route('seller.check')->with('success', 'Pendaftaran berhasil! Silakan cek email Anda untuk konfirmasi.');
+        // Arahkan langsung ke halaman menunggu setelah pendaftaran sukses
+        return redirect()->route('seller.register.waiting')
+            ->with('success', 'Pendaftaran berhasil! Silakan cek email Anda untuk konfirmasi.');
     }
     public function dashboard()
     {

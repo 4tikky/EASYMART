@@ -2,7 +2,7 @@
 
 namespace App\Mail;
 
-use App\Models\Seller;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -11,11 +11,11 @@ class SellerRegisteredMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public Seller $seller;
+    public User $user;
 
-    public function __construct(Seller $seller)
+    public function __construct(User $user)
     {
-        $this->seller = $seller;
+        $this->user = $user;
     }
 
     public function build()
